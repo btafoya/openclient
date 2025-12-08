@@ -128,8 +128,8 @@ class Database extends Config
             return $db;
         }
 
-        // Skip session variable setup in testing environment
-        if (ENVIRONMENT === 'testing') {
+        // Skip session variable setup in testing and CLI environment
+        if (ENVIRONMENT === 'testing' || is_cli()) {
             return $db;
         }
 
