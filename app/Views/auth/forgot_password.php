@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - openclient</title>
+    <title>Forgot Password - openclient</title>
     <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body class="bg-gray-100 antialiased">
@@ -12,10 +12,10 @@
             <!-- Header -->
             <div class="text-center">
                 <h2 class="text-3xl font-extrabold text-gray-900">
-                    openclient
+                    Reset your password
                 </h2>
                 <p class="mt-2 text-sm text-gray-600">
-                    Sign in to your account
+                    Enter your email address and we'll send you a link to reset your password
                 </p>
             </div>
 
@@ -54,9 +54,9 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Login Form -->
+            <!-- Forgot Password Form -->
             <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8">
-                <form method="POST" action="/auth/login" class="space-y-6">
+                <form method="POST" action="/auth/forgot-password" class="space-y-6">
                     <?= csrf_field() ?>
 
                     <!-- Email Field -->
@@ -78,52 +78,13 @@
                         </div>
                     </div>
 
-                    <!-- Password Field -->
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-                        <div class="mt-1">
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autocomplete="current-password"
-                                required
-                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                placeholder="Enter your password"
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Remember Me & Forgot Password -->
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <input
-                                id="remember"
-                                name="remember"
-                                type="checkbox"
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            >
-                            <label for="remember" class="ml-2 block text-sm text-gray-900">
-                                Remember me
-                            </label>
-                        </div>
-
-                        <div class="text-sm">
-                            <a href="/auth/forgot-password" class="font-medium text-blue-600 hover:text-blue-500">
-                                Forgot your password?
-                            </a>
-                        </div>
-                    </div>
-
                     <!-- Submit Button -->
                     <div>
                         <button
                             type="submit"
                             class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                         >
-                            Sign in
+                            Send reset link
                         </button>
                     </div>
                 </form>
@@ -132,9 +93,9 @@
             <!-- Footer Links -->
             <div class="text-center text-sm text-gray-600">
                 <p>
-                    Don't have an account?
-                    <a href="/auth/register" class="font-medium text-blue-600 hover:text-blue-500">
-                        Contact your administrator
+                    Remember your password?
+                    <a href="/auth/login" class="font-medium text-blue-600 hover:text-blue-500">
+                        Sign in
                     </a>
                 </p>
             </div>

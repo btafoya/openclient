@@ -7,10 +7,17 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Dashboard::index');
 
-$routes->group('auth', ['namespace' => 'App\Controllers\Auth'], static function($routes) {
-    $routes->get('login', 'LoginController::showLoginForm');
-    $routes->post('login', 'LoginController::login');
-    $routes->get('logout', 'LoginController::logout');
+$routes->group('auth', ['namespace' => 'App\Controllers'], static function($routes) {
+    // Login routes
+    $routes->get('login', 'AuthController::showLogin');
+    $routes->post('login', 'AuthController::login');
+    $routes->get('logout', 'AuthController::logout');
+
+    // Password reset routes
+    $routes->get('forgot-password', 'AuthController::showForgotPassword');
+    $routes->post('forgot-password', 'AuthController::forgotPassword');
+    $routes->get('reset-password/(:any)', 'AuthController::showResetPassword/$1');
+    $routes->post('reset-password', 'AuthController::resetPassword');
 });
 
 $routes->group('', ['filter' => 'auth'], static function($routes) {
