@@ -1,24 +1,27 @@
 <?= $this->extend('layouts/app') ?>
+
 <?= $this->section('content') ?>
 
-<h1 class="text-2xl font-semibold mb-4">Dashboard</h1>
-<p class="text-sm text-gray-600 mb-4">
-    Welcome to openclient. This is a placeholder dashboard.
-</p>
+<div id="dashboard-app"></div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="bg-white shadow rounded p-4">
-        <h2 class="text-sm font-semibold mb-2">Clients</h2>
-        <p class="text-2xl font-bold">0</p>
-    </div>
-    <div class="bg-white shadow rounded p-4">
-        <h2 class="text-sm font-semibold mb-2">Open Deals</h2>
-        <p class="text-2xl font-bold">0</p>
-    </div>
-    <div class="bg-white shadow rounded p-4">
-        <h2 class="text-sm font-semibold mb-2">Open Tickets</h2>
-        <p class="text-2xl font-bold">0</p>
-    </div>
-</div>
+<script type="module">
+  import { createApp } from 'vue'
+  import { createPinia } from 'pinia'
+  import Dashboard from '/assets/js/components/dashboard/Dashboard.vue'
+  import { useUserStore } from '/assets/js/stores/user.js'
+
+  const app = createApp(Dashboard)
+  const pinia = createPinia()
+
+  app.use(pinia)
+
+  // Initialize user store with server session data
+  const userStore = useUserStore()
+  <?php if (isset($user)): ?>
+  userStore.init(<?= json_encode($user) ?>)
+  <?php endif; ?>
+
+  app.mount('#dashboard-app')
+</script>
 
 <?= $this->endSection() ?>
