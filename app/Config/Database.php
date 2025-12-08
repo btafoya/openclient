@@ -133,8 +133,15 @@ class Database extends Config
             return $db;
         }
 
+        // Prevent infinite loop: only access session if it's already started
+        // Session initialization requires DB connection, so we can't call session()
+        // during the initial DB connection. Check if session is already active.
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return $db;
+        }
+
         // Set PostgreSQL session variables if user is logged in
-        $user = session()->get('user');
+        $user = $_SESSION['user'] ?? null;
         if ($user && is_array($user)) {
             try {
                 // Set current user ID for audit trails and RLS policies
