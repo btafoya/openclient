@@ -114,7 +114,7 @@
 - PHP 8.2 or higher
 - PostgreSQL 16+
 - Composer
-- Node.js & npm (for Tailwind CSS)
+- Node.js 18+ & npm (for Vue.js + Vite build)
 
 ### Installation
 
@@ -126,21 +126,27 @@ cd openclient
 # 2. Install PHP dependencies
 composer install
 
-# 3. Install JavaScript dependencies (Tailwind build)
+# 3. Install JavaScript dependencies (Vue.js, Vite, TailwindCSS)
 npm install
 
-# 4. Configure database
+# 4. Copy TailAdmin template (if not included)
+# cp -r theme-tailadmin-vuejs/* resources/tailadmin/
+
+# 5. Configure database
 cp app/Config/Database.php app/Config/Database.local.php
 # Edit Database.local.php with your PostgreSQL credentials
 
-# 5. Run database migrations
+# 6. Run database migrations
 php spark migrate
 
-# 6. Build Tailwind CSS
+# 7. Build frontend assets (Vue.js + TailwindCSS)
 npm run build
 
-# 7. Start the development server
+# 8. Start the development server
 php spark serve
+
+# 9. (Optional) In a separate terminal, start Vite dev server for hot reload
+npm run dev
 ```
 
 Point your browser to `http://localhost:8080`
@@ -175,9 +181,14 @@ open http://localhost:8080
 |-----------|-----------|
 | Backend | PHP 8.2+, CodeIgniter 4 |
 | Database | PostgreSQL 16 |
-| Frontend | TailwindCSS 3 |
+| Frontend Framework | Vue.js 3 (Composition API) |
+| UI Template | TailAdmin Vue.js |
+| CSS Framework | TailwindCSS 3 |
+| State Management | Pinia |
+| HTTP Client | Axios |
+| Build Tool | Vite |
 | Auth | CodeIgniter 4 Shield (sessions + JWT for API) |
-| Build Tools | Vite, PostCSS, Autoprefixer |
+| Build Tools | PostCSS, Autoprefixer |
 | Deployment | Docker or bare metal |
 
 ---
@@ -192,16 +203,23 @@ openclient/
 │   ├── Domain/           # Business logic services
 │   ├── Entities/         # Data entities
 │   ├── Models/           # Database models
-│   └── Views/            # PHP views (Tailwind CSS)
+│   └── Views/            # PHP views with Vue.js integration
 ├── database/
 │   ├── migrations/       # Database migrations
 │   └── seeds/            # Database seeders
 ├── public/               # Web root (index.php, assets)
 ├── resources/
-│   ├── css/              # Tailwind source
-│   └── js/               # JavaScript
+│   ├── css/              # TailwindCSS source
+│   ├── js/               # Vue.js components
+│   │   ├── app.js        # Main Vue.js entry point
+│   │   ├── components/   # Vue.js components
+│   │   ├── stores/       # Pinia stores
+│   │   └── utils/        # Utilities (Axios, helpers)
+│   └── tailadmin/        # TailAdmin Vue.js template
 ├── docker/               # Docker configuration
 ├── tests/                # Unit and feature tests
+├── vite.config.js        # Vite build configuration
+├── tailwind.config.cjs   # TailwindCSS configuration
 └── writable/             # Logs, cache, uploads
 ```
 
@@ -230,11 +248,12 @@ Contributions are welcome! Please follow these guidelines:
 5. Open a Pull Request
 
 ### Development Guidelines
-- Follow PSR-12 coding standards
-- Write tests for new features
-- Keep controllers thin, business logic in `app/Domain/`
-- Use TailwindCSS for all styling (no custom CSS)
-- Update documentation for significant changes
+- **Backend**: Follow PSR-12 coding standards, keep controllers thin, business logic in `app/Domain/`
+- **Frontend**: Use Vue.js 3 Composition API, leverage TailAdmin components, manage state with Pinia
+- **Styling**: Use TailwindCSS for all styling (no custom CSS)
+- **Testing**: Write tests for new features (PHP backend + Vue.js components)
+- **Architecture**: Maintain hybrid approach - PHP renders views, Vue.js adds interactivity
+- **Documentation**: Update documentation for significant changes
 
 ---
 

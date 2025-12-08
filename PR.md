@@ -2,14 +2,19 @@
 
 ## 1. Overview
 
-**Project name:** openclient  
+**Project name:** openclient
 **Goal:** Build a fully open source, self-hostable alternative to Taskip-style all-in-one agency tools (CRM + projects + billing + support + client portal), using:
 
-- Backend: PHP 8.2+, CodeIgniter 4
-- DB: PostgreSQL
-- UI: TailwindCSS
-- Auth: CI4 auth + session (JWT for API later)
-- Deploy: Docker or bare metal, no vendor lock-in
+- **Backend**: PHP 8.2+, CodeIgniter 4
+- **Database**: PostgreSQL
+- **Frontend**: Vue.js 3 (Composition API) with TailAdmin template
+- **UI Framework**: TailwindCSS 3
+- **Build Tool**: Vite
+- **State Management**: Pinia
+- **HTTP Client**: Axios
+- **Auth**: CI4 auth + session (JWT for API later)
+- **Architecture**: Hybrid - PHP/CodeIgniter renders views, Vue.js components embedded for interactivity
+- **Deploy**: Docker or bare metal, no vendor lock-in
 
 Primary users:
 
@@ -166,10 +171,58 @@ Primary users:
 
 ## 4. Architecture Notes
 
-- Domain-oriented structure under `app/Domain/*` for business logic.
-- HTTP controllers under `app/Controllers/*` are thin.
-- PostgreSQL schema with UUID primary keys, soft deletes, audit fields.
-- Config-based role/capability mapping.
+### 4.1 Backend Architecture (PHP/CodeIgniter 4)
+
+- Domain-oriented structure under `app/Domain/*` for business logic
+- HTTP controllers under `app/Controllers/*` are thin
+- Controllers render views with data, Vue.js handles interactivity
+- PostgreSQL schema with UUID primary keys, soft deletes, audit fields
+- Config-based role/capability mapping
+
+### 4.2 Frontend Architecture (Vue.js 3 + TailAdmin)
+
+**Hybrid Approach**: PHP/CodeIgniter renders HTML views, Vue.js components embedded for rich interactivity
+
+**Tech Stack**:
+- **Vue.js 3** - Composition API for reactive components
+- **TailAdmin Template** - Pre-built Vue components and layouts
+- **Vite** - Fast build tool and dev server
+- **Pinia** - State management (user session, app state)
+- **Axios** - HTTP client for API calls to PHP backend
+- **TailwindCSS 3** - Utility-first CSS framework
+
+**Integration Pattern**:
+```php
+<!-- CodeIgniter View: app/Views/dashboard/index.php -->
+<?= $this->extend('layouts/app') ?>
+<?= $this->section('content') ?>
+
+<div id="dashboard-app">
+    <dashboard-component :initial-data='<?= json_encode($dashboardData) ?>'></dashboard-component>
+</div>
+
+<script type="module">
+import { createApp } from 'vue'
+import DashboardComponent from '@/components/DashboardComponent.vue'
+
+createApp({
+    components: { DashboardComponent }
+}).mount('#dashboard-app')
+</script>
+
+<?= $this->endSection() ?>
+```
+
+**Component Strategy**:
+1. **Use TailAdmin Components**: Leverage pre-built TailAdmin Vue components for common UI patterns
+2. **Custom Adapters**: Create wrapper components to adapt TailAdmin to openclient's data models
+3. **Layout Structure**: Adopt TailAdmin's sidebar, header, navigation patterns
+4. **Design System**: Follow TailAdmin's design language and TailwindCSS configuration
+
+**State Management with Pinia**:
+- **User Store**: Auth state, permissions, current user data
+- **UI Store**: Sidebar state, theme preferences, notifications
+- **Entity Stores**: Clients, projects, invoices (cached from PHP backend)
 
 ### Roles & Role-Based Access Control (RBAC)
 
@@ -235,21 +288,84 @@ openclient supports two distinct project types with corresponding role-based acc
 
 ## 5. UX & Layout
 
-- TailwindCSS-only styling
-- Common header, sidebar, and footer partials, shared via layout:
-  - `app/Views/layouts/app.php` (main layout)
-  - `app/Views/layouts/partials/header.php`
-  - `app/Views/layouts/partials/sidebar.php`
-  - `app/Views/layouts/partials/footer.php`
+**Design System**: TailAdmin Vue.js template with TailwindCSS 3
 
-All authenticated views must:
+**Layout Structure** (PHP/CodeIgniter base with Vue.js components):
+- `app/Views/layouts/app.php` - Main layout with Vue.js initialization
+- `app/Views/layouts/partials/header.php` - Header with Vue.js nav components
+- `app/Views/layouts/partials/sidebar.php` - Sidebar with Vue.js menu components
+- `app/Views/layouts/partials/footer.php` - Footer
+
+**Vue.js Component Organization**:
+```
+resources/
+├── js/
+│   ├── app.js                    # Main Vue app entry point
+│   ├── components/               # Custom Vue components
+│   │   ├── layout/
+│   │   │   ├── Sidebar.vue
+│   │   │   ├── Header.vue
+│   │   │   └── Footer.vue
+│   │   ├── dashboard/
+│   │   │   ├── StatsCard.vue
+│   │   │   ├── RecentActivity.vue
+│   │   │   └── QuickActions.vue
+│   │   ├── clients/
+│   │   │   ├── ClientList.vue
+│   │   │   ├── ClientForm.vue
+│   │   │   └── ClientCard.vue
+│   │   └── shared/
+│   │       ├── DataTable.vue
+│   │       ├── Modal.vue
+│   │       └── Dropdown.vue
+│   ├── stores/                   # Pinia stores
+│   │   ├── user.js
+│   │   ├── ui.js
+│   │   └── clients.js
+│   └── utils/                    # Utilities
+│       ├── api.js                # Axios instance
+│       └── permissions.js        # RBAC helpers
+├── css/
+│   └── app.css                   # TailwindCSS entry (with TailAdmin config)
+└── tailadmin/                    # TailAdmin template components
+    ├── components/
+    ├── layouts/
+    └── ...
+```
+
+**All authenticated views must**:
 
 ```php
 <?= $this->extend('layouts/app') ?>
 <?= $this->section('content') ?>
-<!-- page content -->
+
+<div id="page-app">
+    <!-- Vue.js component with server-side data -->
+    <component-name :initial-data='<?= json_encode($data) ?>'></component-name>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script type="module">
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import ComponentName from '@/components/path/ComponentName.vue'
+
+const app = createApp({
+    components: { ComponentName }
+})
+app.use(createPinia())
+app.mount('#page-app')
+</script>
 <?= $this->endSection() ?>
 ```
+
+**TailAdmin Integration**:
+- Use TailAdmin's pre-built Vue components for common UI patterns (tables, forms, modals, dropdowns)
+- Adapt TailAdmin components to openclient's data models and business logic
+- Follow TailAdmin's design language, color palette, and spacing system
+- Leverage TailAdmin's responsive layouts and mobile-first approach
 
 ## 6. Phased Delivery (High Level)
 

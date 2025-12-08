@@ -77,7 +77,7 @@ class Database extends Config\Database
 }
 ```
 
-## 3. Tailwind & Frontend Build
+## 3. Frontend Build with Vue.js + Vite
 
 ### 3.1 package.json
 
@@ -86,12 +86,19 @@ class Database extends Config\Database
   "name": "openclient-ui",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "watch": "vite build --watch"
   },
+  "dependencies": {
+    "vue": "^3.5.0",
+    "pinia": "^2.2.0",
+    "axios": "^1.7.0"
+  },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
     "tailwindcss": "^3.4.0",
     "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
@@ -100,22 +107,59 @@ class Database extends Config\Database
 }
 ```
 
-### 3.2 tailwind.config.cjs
+### 3.2 vite.config.js
+
+```js
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import { resolve } from 'path'
+
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'resources/js'),
+      'vue': 'vue/dist/vue.esm-bundler.js'
+    }
+  },
+  build: {
+    manifest: true,
+    outDir: 'public/assets',
+    rollupOptions: {
+      input: {
+        app: resolve(__dirname, 'resources/js/app.js')
+      }
+    }
+  },
+  server: {
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      host: 'localhost'
+    }
+  }
+})
+```
+
+### 3.3 tailwind.config.cjs
 
 ```js
 module.exports = {
   content: [
     "./app/Views/**/*.php",
-    "./resources/js/**/*.js"
+    "./resources/js/**/*.{js,vue}",
+    "./theme-tailadmin-vuejs/**/*.{vue,js}"
   ],
   theme: {
-    extend: {}
+    extend: {
+      // TailAdmin theme extensions (colors, spacing, etc.)
+    }
   },
   plugins: []
 };
 ```
 
-### 3.3 postcss.config.cjs
+### 3.4 postcss.config.cjs
 
 ```js
 module.exports = {
@@ -126,7 +170,7 @@ module.exports = {
 };
 ```
 
-### 3.4 CSS Entry
+### 3.5 CSS Entry
 
 `resources/css/app.css`:
 
@@ -134,15 +178,148 @@ module.exports = {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* TailAdmin custom styles */
+@import '../tailadmin/styles/tailadmin.css';
 ```
 
-The built CSS should end up at `public/assets/css/app.css`.
+### 3.6 Vue.js Entry Point
 
-## 4. Shared Layout (Header, Sidebar, Footer)
+`resources/js/app.js`:
+
+```js
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import axios from 'axios'
+
+// Configure Axios defaults
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+axios.defaults.withCredentials = true
+
+// Make axios available globally
+window.axios = axios
+
+// Global Pinia instance
+const pinia = createPinia()
+
+// Export for use in views
+export { createApp, pinia }
+```
+
+### 3.7 Pinia Store Setup
+
+`resources/js/stores/user.js`:
+
+```js
+import { defineStore } from 'pinia'
+import axios from 'axios'
+
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    user: null,
+    permissions: [],
+    role: null,
+    isAuthenticated: false
+  }),
+
+  getters: {
+    canViewFinancials: (state) => {
+      return ['Owner', 'Agency', 'DirectClient'].includes(state.role)
+    },
+    isEndClient: (state) => state.role === 'EndClient'
+  },
+
+  actions: {
+    async fetchUser() {
+      const response = await axios.get('/api/user')
+      this.user = response.data.user
+      this.role = response.data.role
+      this.permissions = response.data.permissions
+      this.isAuthenticated = true
+    },
+
+    logout() {
+      this.user = null
+      this.role = null
+      this.permissions = []
+      this.isAuthenticated = false
+    }
+  }
+})
+```
+
+`resources/js/stores/ui.js`:
+
+```js
+import { defineStore } from 'pinia'
+
+export const useUIStore = defineStore('ui', {
+  state: () => ({
+    sidebarOpen: true,
+    theme: 'light',
+    notifications: []
+  }),
+
+  actions: {
+    toggleSidebar() {
+      this.sidebarOpen = !this.sidebarOpen
+    },
+
+    addNotification(notification) {
+      this.notifications.push({
+        id: Date.now(),
+        ...notification
+      })
+    }
+  }
+})
+```
+
+### 3.8 Axios API Client
+
+`resources/js/utils/api.js`:
+
+```js
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
+  }
+})
+
+// Request interceptor for CSRF token
+api.interceptors.request.use(config => {
+  const token = document.querySelector('meta[name="csrf-token"]')?.content
+  if (token) {
+    config.headers['X-CSRF-TOKEN'] = token
+  }
+  return config
+})
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default api
+```
+
+The built assets end up at `public/assets/`.
+
+## 4. Shared Layout with Vue.js Integration
 
 Create these shared views:
 
-- `app/Views/layouts/app.php`
+- `app/Views/layouts/app.php` - Main layout with Vue.js initialization
 - `app/Views/layouts/partials/header.php`
 - `app/Views/layouts/partials/sidebar.php`
 - `app/Views/layouts/partials/footer.php`
@@ -156,7 +333,8 @@ Create these shared views:
     <meta charset="UTF-8">
     <title><?= esc($title ?? 'openclient') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/assets/css/app.css">
+    <meta name="csrf-token" content="<?= csrf_hash() ?>">
+    <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body class="bg-gray-100 min-h-screen flex">
 
@@ -173,11 +351,130 @@ Create these shared views:
         <?= $this->include('layouts/partials/footer') ?>
     </div>
 
+    <!-- Vue.js base scripts -->
+    <script type="module" src="/assets/app.js"></script>
+
+    <!-- Page-specific Vue.js components -->
+    <?= $this->renderSection('scripts') ?>
+
 </body>
 </html>
 ```
 
 All authenticated views must extend this layout and define a `content` section.
+
+### Example Vue.js Component Integration
+
+**app/Views/dashboard/index.php:**
+
+```php
+<?= $this->extend('layouts/app') ?>
+<?= $this->section('content') ?>
+
+<div id="dashboard-app">
+    <dashboard-component :initial-data='<?= json_encode($dashboardData) ?>'></dashboard-component>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script type="module">
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import DashboardComponent from '@/components/dashboard/DashboardComponent.vue'
+
+const app = createApp({
+    components: { DashboardComponent }
+})
+app.use(createPinia())
+app.mount('#dashboard-app')
+</script>
+<?= $this->endSection() ?>
+```
+
+### Vue.js Component Structure
+
+`resources/js/components/dashboard/DashboardComponent.vue`:
+
+```vue
+<template>
+  <div class="dashboard">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <stats-card
+        v-for="stat in stats"
+        :key="stat.label"
+        :label="stat.label"
+        :value="stat.value"
+        :icon="stat.icon"
+        :trend="stat.trend"
+      />
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <recent-activity :activities="recentActivities" />
+      <quick-actions :actions="quickActions" />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
+import StatsCard from '@/components/shared/StatsCard.vue'
+import RecentActivity from './RecentActivity.vue'
+import QuickActions from './QuickActions.vue'
+import api from '@/utils/api'
+
+const props = defineProps({
+  initialData: {
+    type: Object,
+    required: true
+  }
+})
+
+const userStore = useUserStore()
+const stats = ref(props.initialData.stats || [])
+const recentActivities = ref(props.initialData.activities || [])
+const quickActions = ref(props.initialData.actions || [])
+
+onMounted(async () => {
+  // Fetch user data for RBAC
+  await userStore.fetchUser()
+
+  // Optionally refresh dashboard data
+  // const response = await api.get('/dashboard/refresh')
+  // stats.value = response.data.stats
+})
+</script>
+```
+
+### TailAdmin Component Adaptation
+
+**Using TailAdmin Components:**
+
+```vue
+<template>
+  <div>
+    <!-- Import TailAdmin components -->
+    <tailadmin-button @click="handleAction">
+      Click Me
+    </tailadmin-button>
+
+    <!-- Adapt to custom components -->
+    <custom-data-table
+      :columns="tableColumns"
+      :data="tableData"
+      :pagination="tablePagination"
+    />
+  </div>
+</template>
+
+<script setup>
+import TailadminButton from '@/tailadmin/components/Button.vue'
+import CustomDataTable from '@/components/shared/DataTable.vue'
+// ... component logic
+</script>
+```
 
 ## 5. Minimal Feature Skeleton
 
@@ -964,6 +1261,7 @@ class PayPalService
 
 ## 8. Claude Code First Sprint Checklist
 
+### Phase 1: Backend Foundation
 1. Ensure `composer install` and basic CI4 app boots.
 2. Configure Postgres in `Database.php`.
 3. Implement migrations for:
@@ -979,29 +1277,79 @@ class PayPalService
    - Create `RBACService` in `app/Domain/Auth/`
    - Create `rbac_helper.php` with permission checking functions
    - Register RBAC service in `app/Config/Services.php`
-6. Implement shared layout (header, sidebar, footer) with role-based navigation.
-7. Implement Dashboard and Clients index/create/edit views using the layout.
-8. Implement Projects module with RBAC:
-   - Project creation with manual project type selection
-   - User assignment with manual role selection
-   - Financial data visibility based on user role
-9. **Implement Payment Gateway Integration:**
-   - Install Stripe/PayPal packages (`composer require stripe/stripe-php paypal/rest-api-sdk-php`)
-   - Create payment gateway migrations (payment_gateways, payments, payment_links, recurring_billing, webhook_events)
-   - Implement `StripeService` in `app/Domain/Payments/`
-   - Implement `PayPalService` in `app/Domain/Payments/`
-   - Create webhook controllers for Stripe and PayPal
-   - Update Invoices migration with payment fields
-   - Implement payment flow UI with fee transparency
-   - Add Zelle manual entry display
-   - Configure webhook endpoints in Stripe/PayPal dashboards
-10. Add tests:
-   - Simple test hitting `/` and `/clients`
-   - RBAC permission tests for financial data visibility
-   - Multi-agency isolation tests
-   - **Payment gateway tests:**
-     - Stripe Checkout session creation
-     - Webhook event processing
-     - Invoice payment status updates
-     - Partial payment tracking
-     - Refund processing
+
+### Phase 2: Frontend Setup (Vue.js + TailAdmin)
+6. **Install Node.js dependencies:**
+   - Run `npm install` to install Vue.js, Vite, Pinia, Axios, TailwindCSS
+   - Copy TailAdmin template files to `resources/tailadmin/`
+   - Configure Vite (`vite.config.js`) with Vue plugin and aliases
+   - Configure TailwindCSS to include Vue.js files and TailAdmin components
+7. **Setup Vue.js architecture:**
+   - Create `resources/js/app.js` entry point with Pinia initialization
+   - Create Pinia stores (`user.js`, `ui.js`) in `resources/js/stores/`
+   - Create Axios API client (`resources/js/utils/api.js`) with CSRF and error handling
+   - Setup component directory structure (`components/layout/`, `components/shared/`, etc.)
+8. **Build frontend assets:**
+   - Run `npm run build` to compile Vue.js components and TailwindCSS
+   - Verify assets are output to `public/assets/`
+   - Test hot module replacement with `npm run dev`
+
+### Phase 3: Layout & Components
+9. Implement shared layout (header, sidebar, footer) with Vue.js integration:
+   - Update `app/Views/layouts/app.php` with Vue.js script imports
+   - Add CSRF meta tag for Axios
+   - Create Vue.js layout components (Sidebar.vue, Header.vue)
+   - Implement role-based navigation using Pinia user store
+10. Implement Dashboard with Vue.js components:
+   - Create `DashboardComponent.vue` with TailAdmin components
+   - Pass initial data from PHP controller to Vue.js component
+   - Implement reactive stats cards, recent activity, quick actions
+   - Test Pinia state management and API calls
+
+### Phase 4: Core Features
+11. Implement Clients module with Vue.js:
+    - Create `ClientList.vue`, `ClientForm.vue` components
+    - Use TailAdmin table and form components
+    - Implement CRUD operations with Axios API client
+    - Add client search and filtering
+12. Implement Projects module with RBAC:
+    - Create Vue.js components for project management
+    - Project creation with manual project type selection
+    - User assignment with manual role selection
+    - Financial data visibility based on user role (using Pinia getters)
+    - Conditional rendering of financial sections in Vue.js templates
+
+### Phase 5: Payment Gateway Integration
+13. **Install payment packages:**
+    - `composer require stripe/stripe-php paypal/rest-api-sdk-php`
+    - Create payment gateway migrations (payment_gateways, payments, payment_links, recurring_billing, webhook_events)
+14. **Implement payment services:**
+    - Implement `StripeService` in `app/Domain/Payments/`
+    - Implement `PayPalService` in `app/Domain/Payments/`
+    - Create webhook controllers for Stripe and PayPal
+    - Update Invoices migration with payment fields
+15. **Build payment UI with Vue.js:**
+    - Create `InvoicePayment.vue` component with gateway selection
+    - Implement fee transparency display
+    - Add Zelle manual entry display
+    - Integrate Stripe Checkout with Vue.js
+    - Handle webhook responses and update UI reactively
+16. **Configure external services:**
+    - Configure webhook endpoints in Stripe/PayPal dashboards
+    - Test payment flows in sandbox/test mode
+
+### Phase 6: Testing
+17. Add tests:
+    - Simple test hitting `/` and `/clients`
+    - RBAC permission tests for financial data visibility
+    - Multi-agency isolation tests
+    - **Payment gateway tests:**
+      - Stripe Checkout session creation
+      - Webhook event processing
+      - Invoice payment status updates
+      - Partial payment tracking
+      - Refund processing
+    - **Vue.js component tests:**
+      - Pinia store state management
+      - Component props and events
+      - API integration tests
