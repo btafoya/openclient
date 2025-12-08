@@ -19,10 +19,12 @@ use PDO;
  * - Owner can access all routes
  * - Agency users must have agency_id assigned
  * - Security audit logging for all violations
+ *
+ * @group integration
+ * @group database
  */
 class HttpMiddlewareTest extends TestCase
 {
-
     private static PDO $pdo;
     private static string $agencyId;
     private static string $ownerUserId;
@@ -33,6 +35,15 @@ class HttpMiddlewareTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
+
+        // Skip if CodeIgniter config() helper not available
+        if (!function_exists('config')) {
+            self::markTestSkipped(
+                'Integration tests require CodeIgniter bootstrap with config() helper. ' .
+                'Run with proper test environment or CI pipeline.'
+            );
+            return;
+        }
 
         // Create PDO connection for direct database operations
         $dbConfig = config('Database');

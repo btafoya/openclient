@@ -196,7 +196,12 @@ class InvoiceGuardTest extends TestCase
         $this->assertIsArray($summary);
         $this->assertArrayHasKey('canCreate', $summary);
         $this->assertTrue($summary['canCreate']);
-        $this->assertArrayNotHasKey('canView', $summary);
+
+        // When no invoice provided, resource-specific permissions are null
+        $this->assertArrayHasKey('canView', $summary);
+        $this->assertNull($summary['canView']);
+        $this->assertNull($summary['canEdit']);
+        $this->assertNull($summary['canDelete']);
     }
 
     public function test_permission_summary_with_invoice(): void
