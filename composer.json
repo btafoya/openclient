@@ -14,7 +14,8 @@
   "require-dev": {
     "phpunit/phpunit": "^10.5",
     "fakerphp/faker": "^1.23",
-    "mockery/mockery": "^1.6"
+    "mockery/mockery": "^1.6",
+    "phpstan/phpstan": "^2.1"
   },
   "autoload": {
     "psr-4": {
@@ -29,6 +30,8 @@
   },
   "scripts": {
     "test": "phpunit",
-    "test:coverage": "phpunit --coverage-html coverage/"
+    "test:coverage": "phpunit --coverage-html coverage/",
+    "analyse": "phpstan analyze --memory-limit 512M",
+    "analyse:baseline": "phpstan analyze --memory-limit 512M --generate-baseline"
   }
 }

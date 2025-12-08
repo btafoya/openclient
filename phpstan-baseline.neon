@@ -1,0 +1,919 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Config\\Database\:\:connect\(\) return type with generic class CodeIgniter\\Database\\BaseConnection does not specify its types\: TConnection, TResult$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Config/Database.php
+
+		-
+			message: '#^Method App\\Controllers\\Auth\\LoginController\:\:login\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Auth/LoginController.php
+
+		-
+			message: '#^Method App\\Controllers\\Auth\\LoginController\:\:logout\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Auth/LoginController.php
+
+		-
+			message: '#^Method App\\Controllers\\Auth\\LoginController\:\:showLoginForm\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Auth/LoginController.php
+
+		-
+			message: '#^Function base_url not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Controllers\\AuthController\:\:showForgotPassword\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Controllers\\AuthController\:\:showLogin\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Controllers\\AuthController\:\:showResetPassword\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/AuthController.php
+
+		-
+			message: '#^Method App\\Controllers\\Clients\\ClientController\:\:create\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Clients/ClientController.php
+
+		-
+			message: '#^Method App\\Controllers\\Clients\\ClientController\:\:edit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Clients/ClientController.php
+
+		-
+			message: '#^Method App\\Controllers\\Clients\\ClientController\:\:edit\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Controllers/Clients/ClientController.php
+
+		-
+			message: '#^Method App\\Controllers\\Clients\\ClientController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Clients/ClientController.php
+
+		-
+			message: '#^Method App\\Controllers\\Clients\\ClientController\:\:store\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Clients/ClientController.php
+
+		-
+			message: '#^Method App\\Controllers\\Clients\\ClientController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Clients/ClientController.php
+
+		-
+			message: '#^Method App\\Controllers\\Clients\\ClientController\:\:update\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Controllers/Clients/ClientController.php
+
+		-
+			message: '#^Method App\\Controllers\\Dashboard\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/Dashboard.php
+
+		-
+			message: '#^Call to method builder\(\) on an unknown class App\\Models\\ActivityLogModel\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to method builder\(\) on an unknown class App\\Models\\InvoiceModel\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to method builder\(\) on an unknown class App\\Models\\PaymentModel\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to method builder\(\) on an unknown class App\\Models\\ProjectModel\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Instantiated class App\\Models\\ActivityLogModel not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Instantiated class App\\Models\\InvoiceModel not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Instantiated class App\\Models\\PaymentModel not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Instantiated class App\\Models\\ProjectModel not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:calculateClientTrend\(\) never returns array so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:calculateClientTrend\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:data\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getInvoiceStats\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getInvoiceStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getProjectStats\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getProjectStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getRecentActivity\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getRecentActivity\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getRevenueStats\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getRevenueStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getStats\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:getStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Method App\\Controllers\\DashboardController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Property App\\Controllers\\DashboardController\:\:\$activityModel has unknown class App\\Models\\ActivityLogModel as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Property App\\Controllers\\DashboardController\:\:\$invoiceModel has unknown class App\\Models\\InvoiceModel as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Property App\\Controllers\\DashboardController\:\:\$paymentModel has unknown class App\\Models\\PaymentModel as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Property App\\Controllers\\DashboardController\:\:\$projectModel has unknown class App\\Models\\ProjectModel as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/DashboardController.php
+
+		-
+			message: '#^Call to method delete\(\) on an unknown class App\\Models\\InvoiceModel\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Call to method find\(\) on an unknown class App\\Models\\InvoiceModel\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Call to method findAll\(\) on an unknown class App\\Models\\InvoiceModel\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Call to method insert\(\) on an unknown class App\\Models\\InvoiceModel\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Call to method update\(\) on an unknown class App\\Models\\InvoiceModel\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Instantiated class App\\Models\\InvoiceModel not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:create\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:delete\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:delete\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:edit\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:edit\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:new\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:show\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:update\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Controllers\\InvoicesController\:\:update\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Property App\\Controllers\\InvoicesController\:\:\$model has unknown class App\\Models\\InvoiceModel as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Controllers/InvoicesController.php
+
+		-
+			message: '#^Method App\\Domain\\Authorization\\AuthorizationGuardInterface\:\:canCreate\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Authorization/AuthorizationGuardInterface.php
+
+		-
+			message: '#^Method App\\Domain\\Authorization\\AuthorizationGuardInterface\:\:canDelete\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Authorization/AuthorizationGuardInterface.php
+
+		-
+			message: '#^Method App\\Domain\\Authorization\\AuthorizationGuardInterface\:\:canEdit\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Authorization/AuthorizationGuardInterface.php
+
+		-
+			message: '#^Method App\\Domain\\Authorization\\AuthorizationGuardInterface\:\:canView\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Authorization/AuthorizationGuardInterface.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:belongsToUsersAgency\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:belongsToUsersAgency\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:canCreate\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:canDelete\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:canEdit\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:canManageUsers\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:canView\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:getAssignedUsers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:getPermissionSummary\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Clients\\Authorization\\ClientGuard\:\:getPermissionSummary\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Clients/Authorization/ClientGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Invoices\\Authorization\\InvoiceGuard\:\:belongsToUsersAgency\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Invoices/Authorization/InvoiceGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Invoices\\Authorization\\InvoiceGuard\:\:belongsToUsersAgency\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Domain/Invoices/Authorization/InvoiceGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Invoices\\Authorization\\InvoiceGuard\:\:canCreate\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Invoices/Authorization/InvoiceGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Invoices\\Authorization\\InvoiceGuard\:\:canDelete\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Invoices/Authorization/InvoiceGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Invoices\\Authorization\\InvoiceGuard\:\:canEdit\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Invoices/Authorization/InvoiceGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Invoices\\Authorization\\InvoiceGuard\:\:canView\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Invoices/Authorization/InvoiceGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Invoices\\Authorization\\InvoiceGuard\:\:getPermissionSummary\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Invoices/Authorization/InvoiceGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Invoices\\Authorization\\InvoiceGuard\:\:getPermissionSummary\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Invoices/Authorization/InvoiceGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Projects\\Authorization\\ProjectGuard\:\:canCreate\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Projects/Authorization/ProjectGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Projects\\Authorization\\ProjectGuard\:\:canDelete\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Projects/Authorization/ProjectGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Projects\\Authorization\\ProjectGuard\:\:canEdit\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Projects/Authorization/ProjectGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Projects\\Authorization\\ProjectGuard\:\:canManageMembers\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Projects/Authorization/ProjectGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Projects\\Authorization\\ProjectGuard\:\:canView\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Projects/Authorization/ProjectGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Projects\\Authorization\\ProjectGuard\:\:getPermissionSummary\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Projects/Authorization/ProjectGuard.php
+
+		-
+			message: '#^Method App\\Domain\\Projects\\Authorization\\ProjectGuard\:\:getPermissionSummary\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Domain/Projects/Authorization/ProjectGuard.php
+
+		-
+			message: '#^Method App\\Filters\\AuthFilter\:\:after\(\) should return CodeIgniter\\HTTP\\ResponseInterface\|null but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Filters/AuthFilter.php
+
+		-
+			message: '#^Method App\\Filters\\AuthFilter\:\:before\(\) should return CodeIgniter\\HTTP\\RequestInterface\|CodeIgniter\\HTTP\\ResponseInterface\|string\|null but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: app/Filters/AuthFilter.php
+
+		-
+			message: '#^Method App\\Filters\\RBACFilter\:\:after\(\) has parameter \$arguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filters/RBACFilter.php
+
+		-
+			message: '#^Method App\\Filters\\RBACFilter\:\:before\(\) has parameter \$arguments with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filters/RBACFilter.php
+
+		-
+			message: '#^Method App\\Filters\\RBACFilter\:\:logSecurityViolation\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filters/RBACFilter.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:getEventsByType\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:getUserSecurityEvents\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:logAccessDenied\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:logDataAccess\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:logPrivilegeEscalation\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:logSuspiciousActivity\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:logSuspiciousActivity\(\) has parameter \$user with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:parseSecurityLog\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Helpers\\SecurityLogger\:\:writeToSecurityLog\(\) has parameter \$logData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Helpers/SecurityLogger.php
+
+		-
+			message: '#^Method App\\Models\\UserModel\:\:findByEmail\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/UserModel.php
+
+		-
+			message: '#^Method App\\Models\\UserModel\:\:generateUUID\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/UserModel.php
+
+		-
+			message: '#^Method App\\Models\\UserModel\:\:generateUUID\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/UserModel.php
+
+		-
+			message: '#^Method App\\Models\\UserModel\:\:hashPassword\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/UserModel.php
+
+		-
+			message: '#^Method App\\Models\\UserModel\:\:hashPassword\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/UserModel.php
+
+		-
+			message: '#^Function csrf_field not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Views/auth/forgot_password.php
+
+		-
+			message: '#^Function esc not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: app/Views/auth/forgot_password.php
+
+		-
+			message: '#^Function old not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Views/auth/forgot_password.php
+
+		-
+			message: '#^Function csrf_field not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Views/auth/login.php
+
+		-
+			message: '#^Function esc not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: app/Views/auth/login.php
+
+		-
+			message: '#^Function old not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Views/auth/login.php
+
+		-
+			message: '#^Function csrf_field not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Views/auth/reset_password.php
+
+		-
+			message: '#^Function esc not found\.$#'
+			identifier: function.notFound
+			count: 3
+			path: app/Views/auth/reset_password.php
+
+		-
+			message: '#^Variable \$this might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: app/Views/clients/create.php
+
+		-
+			message: '#^Function esc not found\.$#'
+			identifier: function.notFound
+			count: 4
+			path: app/Views/clients/edit.php
+
+		-
+			message: '#^Variable \$client might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: app/Views/clients/edit.php
+
+		-
+			message: '#^Variable \$this might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: app/Views/clients/edit.php
+
+		-
+			message: '#^Function esc not found\.$#'
+			identifier: function.notFound
+			count: 4
+			path: app/Views/clients/index.php
+
+		-
+			message: '#^Variable \$this might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: app/Views/clients/index.php
+
+		-
+			message: '#^Variable \$this might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: app/Views/dashboard/index.php
+
+		-
+			message: '#^Function csrf_hash not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Views/layouts/app.php
+
+		-
+			message: '#^Function esc not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Views/layouts/app.php
+
+		-
+			message: '#^Variable \$this might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: app/Views/layouts/app.php
+
+		-
+			message: '#^Function esc not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: app/Views/layouts/partials/header.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 2
+			path: tests/Integration/RBAC/HttpMiddlewareTest.php
+
+		-
+			message: '#^Property Tests\\Integration\\RowLevelSecurityTest\:\:\$agencyA has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: tests/Integration/RowLevelSecurityTest.php
+
+		-
+			message: '#^Property Tests\\Integration\\RowLevelSecurityTest\:\:\$agencyB has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: tests/Integration/RowLevelSecurityTest.php
+
+		-
+			message: '#^Property Tests\\Integration\\RowLevelSecurityTest\:\:\$clientAlpha has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: tests/Integration/RowLevelSecurityTest.php
+
+		-
+			message: '#^Property Tests\\Integration\\RowLevelSecurityTest\:\:\$clientBeta has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: tests/Integration/RowLevelSecurityTest.php
+
+		-
+			message: '#^Static property Tests\\Integration\\RowLevelSecurityTest\:\:\$clientAlpha is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Integration/RowLevelSecurityTest.php
+
+		-
+			message: '#^Access to an undefined property Faker\\Generator\:\:\$state\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Support/Factories/AgencyFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\AgencyFactory\:\:make\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/AgencyFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\AgencyFactory\:\:make\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/AgencyFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\AgencyFactory\:\:makeMany\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/AgencyFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\AgencyFactory\:\:makeMany\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/AgencyFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:make\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:make\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeAgency\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeAgency\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeDirectClient\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeDirectClient\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeEndClient\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeEndClient\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeMany\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeMany\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeOwner\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\Factories\\UserFactory\:\:makeOwner\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/Factories/UserFactory.php
+
+		-
+			message: '#^Method Tests\\Support\\TestCase\:\:assertArrayHasKeys\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/TestCase.php
+
+		-
+			message: '#^Method Tests\\Support\\TestCase\:\:assertArrayHasKeys\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Support/TestCase.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/ExampleTest.php

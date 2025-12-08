@@ -3,7 +3,7 @@
         'name' => 'btafoya/openclient',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '2a25586823ab69e638573456e77e0ab0b5a99c17',
+        'reference' => '9a6785882b8d906ebc6533da972b418f397a7fda',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'btafoya/openclient' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '2a25586823ab69e638573456e77e0ab0b5a99c17',
+            'reference' => '9a6785882b8d906ebc6533da972b418f397a7fda',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -153,6 +153,15 @@
             'install_path' => __DIR__ . '/../phenx/php-svg-lib',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'phpstan/phpstan' => array(
+            'pretty_version' => '2.1.33',
+            'version' => '2.1.33.0',
+            'reference' => '9e800e6bee7d5bd02784d4c6069b48032d16224f',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpstan/phpstan',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'phpunit/php-code-coverage' => array(
             'pretty_version' => '10.1.16',

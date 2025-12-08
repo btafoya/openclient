@@ -1,0 +1,36 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 6
+    paths:
+        - app
+        - tests
+
+    # Exclude patterns
+    excludePaths:
+        - tests/e2e_auth_test.php  # Standalone E2E script
+
+    # Ignore errors for CodeIgniter helper functions and constants
+    ignoreErrors:
+        # CodeIgniter helper functions are loaded dynamically
+        - '#Function (view|session|redirect|log_message|helper|config|service|model|cache|cookie) not found#'
+
+        # CodeIgniter constants defined at runtime
+        - '#Constant (APPPATH|SYSTEMPATH|ROOTPATH|FCPATH|WRITEPATH|ENVIRONMENT|CI_DEBUG) not found#'
+
+        # Unreachable statements in skipped tests are expected
+        - '#Unreachable statement - code above always terminates#'
+
+        # Array type assertions in tests
+        - '#Call to method PHPUnit\\Framework\\Assert::assertIsArray\(\) with array will always evaluate to true#'
+
+        # Test comparison operations
+        - '#Comparison operation .* is always true#'
+
+    # Don't report issues for missing return types on controller methods
+    # (CodeIgniter controllers return mixed types)
+    reportUnmatchedIgnoredErrors: false
+
+    # Treat PHPDoc types as certain
+    treatPhpDocTypesAsCertain: true
