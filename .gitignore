@@ -144,3 +144,5 @@ docs/.doctrees/
 .deployment
 deploy.php
 Envoy.blade.php
+public/writable/session/
+writable/debugbar/
