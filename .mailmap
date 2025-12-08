@@ -1,0 +1,8 @@
+# Git Mailmap - Correct Author Attribution
+# Format: Proper Name <proper@email.xx> Commit Name <commit@email.xx>
+
+# Ensure all commits are attributed to Brian Tafoya
+Brian Tafoya <btafoya@briantafoya.com> Brian Tafoya <btafoya@briantafoya.com>
+
+# Map any potential variations
+Brian Tafoya <btafoya@briantafoya.com>
