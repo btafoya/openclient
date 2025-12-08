@@ -35,6 +35,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'login'         => \App\Filters\LoginFilter::class,
+        'rbac'          => \App\Filters\RBACFilter::class,
     ];
 
     /**
@@ -75,6 +76,7 @@ class Filters extends BaseFilters
         'before' => [
             'csrf' => ['except' => ['api/*']],
             'login' => ['except' => ['auth/*', '/']],
+            'rbac' => ['except' => ['auth/*', '/', '/dashboard']],
         ],
         'after' => [
             'secureheaders',
