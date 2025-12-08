@@ -208,7 +208,11 @@ export { createApp, pinia }
 
 ### 3.7 Pinia Store Setup
 
-`resources/js/stores/user.js`:
+**Store Strategy**: Use Pinia selectively - required for user/RBAC and UI state, optional for feature-specific data.
+
+#### Required Stores
+
+`resources/js/stores/user.js` - **Always needed for RBAC**:
 
 ```js
 import { defineStore } from 'pinia'
@@ -223,10 +227,13 @@ export const useUserStore = defineStore('user', {
   }),
 
   getters: {
+    // RBAC getters - accessible from any component
     canViewFinancials: (state) => {
       return ['Owner', 'Agency', 'DirectClient'].includes(state.role)
     },
-    isEndClient: (state) => state.role === 'EndClient'
+    isEndClient: (state) => state.role === 'EndClient',
+    isOwner: (state) => state.role === 'Owner',
+    isAgency: (state) => state.role === 'Agency'
   },
 
   actions: {
@@ -248,7 +255,7 @@ export const useUserStore = defineStore('user', {
 })
 ```
 
-`resources/js/stores/ui.js`:
+`resources/js/stores/ui.js` - **Always needed for global UI state**:
 
 ```js
 import { defineStore } from 'pinia'
@@ -270,10 +277,61 @@ export const useUIStore = defineStore('ui', {
         id: Date.now(),
         ...notification
       })
+    },
+
+    clearNotifications() {
+      this.notifications = []
     }
   }
 })
 ```
+
+#### Optional Feature Stores
+
+**When to create**: Only when multiple components need to share the same data or make repeated API calls.
+
+`resources/js/stores/clients.js` - **Example feature store**:
+
+```js
+import { defineStore } from 'pinia'
+import api from '@/utils/api'
+
+export const useClientsStore = defineStore('clients', {
+  state: () => ({
+    clients: [],
+    loading: false,
+    error: null
+  }),
+
+  actions: {
+    async fetchClients() {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await api.get('/clients')
+        this.clients = response.data
+      } catch (error) {
+        this.error = error.message
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async createClient(clientData) {
+      const response = await api.post('/clients', clientData)
+      this.clients.push(response.data)
+      return response.data
+    }
+  }
+})
+```
+
+**Pattern**: Start without feature stores. If you find yourself:
+- Making the same API call in multiple components
+- Passing data through many component layers (prop drilling)
+- Needing to sync state between components
+
+Then create a feature store. Otherwise, just use props from PHP.
 
 ### 3.8 Axios API Client
 
@@ -394,6 +452,8 @@ app.mount('#dashboard-app')
 
 ### Vue.js Component Structure
 
+#### Example 1: Using Props from PHP (Simple Component)
+
 `resources/js/components/dashboard/DashboardComponent.vue`:
 
 ```vue
@@ -412,7 +472,12 @@ app.mount('#dashboard-app')
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <recent-activity :activities="recentActivities" />
-      <quick-actions :actions="quickActions" />
+
+      <!-- Use RBAC store for conditional rendering -->
+      <quick-actions
+        v-if="!userStore.isEndClient"
+        :actions="quickActions"
+      />
     </div>
   </div>
 </template>
@@ -423,7 +488,6 @@ import { useUserStore } from '@/stores/user'
 import StatsCard from '@/components/shared/StatsCard.vue'
 import RecentActivity from './RecentActivity.vue'
 import QuickActions from './QuickActions.vue'
-import api from '@/utils/api'
 
 const props = defineProps({
   initialData: {
@@ -432,21 +496,74 @@ const props = defineProps({
   }
 })
 
+// Use user store for RBAC only
 const userStore = useUserStore()
+
+// Use props from PHP for data (no API calls needed)
 const stats = ref(props.initialData.stats || [])
 const recentActivities = ref(props.initialData.activities || [])
 const quickActions = ref(props.initialData.actions || [])
 
 onMounted(async () => {
-  // Fetch user data for RBAC
+  // Fetch user data for RBAC checks
   await userStore.fetchUser()
-
-  // Optionally refresh dashboard data
-  // const response = await api.get('/dashboard/refresh')
-  // stats.value = response.data.stats
 })
 </script>
 ```
+
+#### Example 2: Using Pinia Store (Shared Data with API Calls)
+
+`resources/js/components/clients/ClientList.vue`:
+
+```vue
+<template>
+  <div class="client-list">
+    <div class="flex justify-between mb-4">
+      <h2>Clients</h2>
+      <button
+        v-if="userStore.canViewFinancials"
+        @click="showCreateModal = true"
+      >
+        Add Client
+      </button>
+    </div>
+
+    <!-- Use store data that's shared across components -->
+    <div v-if="clientsStore.loading">Loading...</div>
+    <div v-else-if="clientsStore.error">Error: {{ clientsStore.error }}</div>
+    <div v-else>
+      <client-card
+        v-for="client in clientsStore.clients"
+        :key="client.id"
+        :client="client"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { useClientsStore } from '@/stores/clients'
+import ClientCard from './ClientCard.vue'
+
+const userStore = useUserStore()
+const clientsStore = useClientsStore()
+const showCreateModal = ref(false)
+
+onMounted(async () => {
+  await userStore.fetchUser()
+
+  // Fetch clients - this data is now available to other components
+  // that import useClientsStore() (like Dashboard, Reports, etc.)
+  await clientsStore.fetchClients()
+})
+</script>
+```
+
+**Key Difference**:
+- **DashboardComponent**: Uses props from PHP, no store for data (simple)
+- **ClientList**: Uses Pinia store because client data is needed by multiple components (Dashboard, Reports, Sidebar stats)
 
 ### TailAdmin Component Adaptation
 

@@ -220,9 +220,12 @@ createApp({
 4. **Design System**: Follow TailAdmin's design language and TailwindCSS configuration
 
 **State Management with Pinia**:
-- **User Store**: Auth state, permissions, current user data
-- **UI Store**: Sidebar state, theme preferences, notifications
-- **Entity Stores**: Clients, projects, invoices (cached from PHP backend)
+- **Required Stores**:
+  - **User Store**: Auth state, permissions, current user data, RBAC getters (`canViewFinancials`, `isEndClient`)
+  - **UI Store**: Sidebar state, theme preferences, notifications, global UI state
+- **Optional Feature Stores** (add only when multiple components need shared data):
+  - **Entity Stores**: Clients, projects, invoices (use when components make API calls and share data)
+  - **Pattern**: Start with PHP props → add stores only when you see repeated API calls or shared state needs
 
 ### Roles & Role-Based Access Control (RBAC)
 
