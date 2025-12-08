@@ -58,3 +58,4 @@ But always commit and sign work as **your own**.
 ---
 
 **This policy applies to all commits in the openclient repository.**
+- Test development using https://ocdev.premadev.com/
