@@ -16,6 +16,9 @@
         <testsuite name="Integration">
             <directory>./tests/Integration</directory>
         </testsuite>
+        <testsuite name="Database">
+            <directory>./tests/Database</directory>
+        </testsuite>
     </testsuites>
 
     <source>
@@ -45,5 +48,9 @@
         <env name="database.tests.username" value="openclient_user"/>
         <env name="database.tests.password" value="dev_password_change_in_production"/>
         <env name="database.tests.DBDriver" value="Postgre"/>
+
+        <!-- Define paths for CodeIgniter testing -->
+        <const name="TESTPATH" value="./tests/"/>
+        <const name="SUPPORTPATH" value="./tests/Support/"/>
     </php>
 </phpunit>
