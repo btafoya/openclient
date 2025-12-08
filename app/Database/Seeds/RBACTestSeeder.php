@@ -44,7 +44,6 @@ class RBACTestSeeder extends Seeder
         // Create Agency A
         $agencyAId = $this->createAgency([
             'name' => 'Test Agency A',
-            'created_by' => $ownerId,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -65,7 +64,6 @@ class RBACTestSeeder extends Seeder
         // Create Agency B
         $agencyBId = $this->createAgency([
             'name' => 'Test Agency B',
-            'created_by' => $ownerId,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -86,9 +84,9 @@ class RBACTestSeeder extends Seeder
         // Create Direct Client for Agency A
         $directClientId = $this->createClient([
             'name' => 'Test Direct Client',
-            'client_type' => 'direct',
             'agency_id' => $agencyAId,
-            'created_by' => $agencyAUserId,
+            'email' => 'direct@test.com',
+            'company' => 'Direct Client Corp',
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -100,7 +98,7 @@ class RBACTestSeeder extends Seeder
             'email' => 'client1@openclient.test',
             'password_hash' => password_hash('client123', PASSWORD_BCRYPT),
             'role' => 'direct_client',
-            'agency_id' => null,
+            'agency_id' => $agencyAId,
             'is_active' => true,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
@@ -112,10 +110,9 @@ class RBACTestSeeder extends Seeder
         // Create End Client for Agency A
         $endClientId = $this->createClient([
             'name' => 'Test End Client',
-            'client_type' => 'end',
             'agency_id' => $agencyAId,
-            'parent_client_id' => $directClientId,
-            'created_by' => $agencyAUserId,
+            'email' => 'end@test.com',
+            'company' => 'End Client Corp',
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -127,7 +124,7 @@ class RBACTestSeeder extends Seeder
             'email' => 'endclient1@openclient.test',
             'password_hash' => password_hash('endclient123', PASSWORD_BCRYPT),
             'role' => 'end_client',
-            'agency_id' => null,
+            'agency_id' => $agencyAId,
             'is_active' => true,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
