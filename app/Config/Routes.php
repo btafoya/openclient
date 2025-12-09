@@ -71,6 +71,28 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
         $routes->delete('(:segment)', 'TimelineController::delete/$1');
     });
 
+    // CSV Import routes
+    $routes->group('csv/import', ['namespace' => 'App\Controllers\CsvImport'], static function($routes) {
+        $routes->get('/', 'CsvImportController::index');
+        $routes->post('upload', 'CsvImportController::upload');
+        $routes->get('(:segment)/mapping', 'CsvImportController::mapping/$1');
+        $routes->post('(:segment)/mapping', 'CsvImportController::saveMapping/$1');
+        $routes->get('(:segment)', 'CsvImportController::show/$1');
+        $routes->post('(:segment)/cancel', 'CsvImportController::cancel/$1');
+        $routes->delete('(:segment)', 'CsvImportController::delete/$1');
+        $routes->get('template/download', 'CsvImportController::downloadTemplate');
+    });
+
+    // CSV Export routes
+    $routes->group('csv/export', ['namespace' => 'App\Controllers\CsvImport'], static function($routes) {
+        $routes->get('/', 'CsvExportController::index');
+        $routes->post('/', 'CsvExportController::export');
+        $routes->get('fields', 'CsvExportController::getFields');
+    });
+
+    // CSV History route
+    $routes->get('csv/history', 'CsvImport\CsvImportController::history');
+
     // API routes
     $routes->group('api', static function($routes) {
         $routes->group('clients', ['namespace' => 'App\Controllers\Clients'], static function($routes) {
@@ -89,6 +111,9 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
             $routes->get('/', 'TimelineController::apiIndex');
             $routes->get('(:segment)', 'TimelineController::apiShow/$1');
             $routes->get('statistics', 'TimelineController::apiStatistics');
+        });
+        $routes->group('csv', ['namespace' => 'App\Controllers\CsvImport'], static function($routes) {
+            $routes->get('import/statistics', 'CsvImportController::apiStatistics');
         });
     });
 });
