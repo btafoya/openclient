@@ -53,7 +53,10 @@ class NoteModel extends Model
 
     // Callbacks
     protected $beforeInsert = ['generateUuid', 'setAgencyId'];
+    protected $afterInsert = ['logNoteCreated'];
     protected $beforeUpdate = [];
+    protected $afterUpdate = ['logNoteUpdated'];
+    protected $afterDelete = ['logNoteDeleted'];
 
     /**
      * Generate UUID for new records
@@ -401,5 +404,126 @@ class NoteModel extends Model
             ->where('notes.id', $id)
             ->get()
             ->getRowArray();
+    }
+
+    /**
+     * Log note creation to timeline
+     */
+    protected function logNoteCreated(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id'])) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $noteTitle = !empty($data['data']['subject'])
+            ? $data['data']['subject']
+            : substr($data['data']['content'], 0, 50) . '...';
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'note',
+            entityId: $data['id'],
+            eventType: 'created',
+            description: "Created note: {$noteTitle}"
+        );
+
+        return $data;
+    }
+
+    /**
+     * Log note updates to timeline
+     */
+    protected function logNoteUpdated(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id']) || empty($data['id'])) {
+            return $data;
+        }
+
+        $noteId = is_array($data['id']) ? $data['id'][0] : $data['id'];
+        $note = $this->find($noteId);
+        if (!$note) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $noteTitle = !empty($note['subject'])
+            ? $note['subject']
+            : substr($note['content'], 0, 50) . '...';
+
+        // Detect what changed
+        $changes = [];
+        if (isset($data['data'])) {
+            foreach ($data['data'] as $field => $value) {
+                if (isset($note[$field]) && $note[$field] != $value) {
+                    $changes[] = $field;
+                }
+            }
+        }
+
+        // Determine event type and description
+        if (isset($data['data']['deleted_at']) && $data['data']['deleted_at'] === null) {
+            $description = "Restored note: {$noteTitle}";
+            $eventType = 'restored';
+        } elseif (isset($data['data']['is_pinned'])) {
+            // Toggle pin operation
+            $isPinned = $data['data']['is_pinned'];
+            $eventType = $isPinned ? 'pinned' : 'unpinned';
+            $description = $isPinned
+                ? "Pinned note: {$noteTitle}"
+                : "Unpinned note: {$noteTitle}";
+        } elseif (!empty($changes)) {
+            $changedFields = implode(', ', $changes);
+            $description = "Updated note: {$noteTitle} (changed: {$changedFields})";
+            $eventType = 'updated';
+        } else {
+            return $data;
+        }
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'note',
+            entityId: $noteId,
+            eventType: $eventType,
+            description: $description,
+            metadata: !empty($changes) ? ['changed_fields' => $changes] : null
+        );
+
+        return $data;
+    }
+
+    /**
+     * Log note deletion to timeline
+     */
+    protected function logNoteDeleted(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id']) || empty($data['id'])) {
+            return $data;
+        }
+
+        $noteId = is_array($data['id']) ? $data['id'][0] : $data['id'];
+        $note = $this->withDeleted()->find($noteId);
+        if (!$note) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $noteTitle = !empty($note['subject'])
+            ? $note['subject']
+            : substr($note['content'], 0, 50) . '...';
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'note',
+            entityId: $noteId,
+            eventType: 'deleted',
+            description: "Deleted note: {$noteTitle}",
+            metadata: ['purge' => $data['purge'] ?? false]
+        );
+
+        return $data;
     }
 }

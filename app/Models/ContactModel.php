@@ -75,13 +75,13 @@ class ContactModel extends Model
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert = ['generateUuid', 'setAgencyId', 'handlePrimaryContact'];
-    protected $afterInsert = [];
+    protected $afterInsert = ['logContactCreated'];
     protected $beforeUpdate = ['handlePrimaryContact'];
-    protected $afterUpdate = [];
+    protected $afterUpdate = ['logContactUpdated'];
     protected $beforeFind = [];
     protected $afterFind = [];
     protected $beforeDelete = [];
-    protected $afterDelete = [];
+    protected $afterDelete = ['logContactDeleted'];
 
     /**
      * Generate UUID for new contact
@@ -304,5 +304,117 @@ class ContactModel extends Model
             ->orderBy('contacts.first_name', 'ASC')
             ->get()
             ->getResultArray();
+    }
+
+    /**
+     * Log contact creation to timeline
+     */
+    protected function logContactCreated(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id'])) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $contactName = $this->getFullName($data['data']);
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'contact',
+            entityId: $data['id'],
+            eventType: 'created',
+            description: "Created contact: {$contactName}"
+        );
+
+        return $data;
+    }
+
+    /**
+     * Log contact updates to timeline
+     */
+    protected function logContactUpdated(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id']) || empty($data['id'])) {
+            return $data;
+        }
+
+        $contactId = is_array($data['id']) ? $data['id'][0] : $data['id'];
+        $contact = $this->find($contactId);
+        if (!$contact) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $contactName = $this->getFullName($contact);
+
+        // Detect what changed
+        $changes = [];
+        if (isset($data['data'])) {
+            foreach ($data['data'] as $field => $value) {
+                if (isset($contact[$field]) && $contact[$field] != $value) {
+                    $changes[] = $field;
+                }
+            }
+        }
+
+        // Determine event type and description
+        if (isset($data['data']['deleted_at']) && $data['data']['deleted_at'] === null) {
+            $description = "Restored contact: {$contactName}";
+            $eventType = 'restored';
+        } elseif (isset($data['data']['is_active'])) {
+            $status = $data['data']['is_active'] ? 'activated' : 'deactivated';
+            $description = "Contact {$status}: {$contactName}";
+            $eventType = 'status_changed';
+        } elseif (!empty($changes)) {
+            $changedFields = implode(', ', $changes);
+            $description = "Updated contact: {$contactName} (changed: {$changedFields})";
+            $eventType = 'updated';
+        } else {
+            return $data;
+        }
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'contact',
+            entityId: $contactId,
+            eventType: $eventType,
+            description: $description,
+            metadata: !empty($changes) ? ['changed_fields' => $changes] : null
+        );
+
+        return $data;
+    }
+
+    /**
+     * Log contact deletion to timeline
+     */
+    protected function logContactDeleted(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id']) || empty($data['id'])) {
+            return $data;
+        }
+
+        $contactId = is_array($data['id']) ? $data['id'][0] : $data['id'];
+        $contact = $this->withDeleted()->find($contactId);
+        if (!$contact) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $contactName = $this->getFullName($contact);
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'contact',
+            entityId: $contactId,
+            eventType: 'deleted',
+            description: "Deleted contact: {$contactName}",
+            metadata: ['purge' => $data['purge'] ?? false]
+        );
+
+        return $data;
     }
 }

@@ -86,12 +86,12 @@ class ClientModel extends Model
     protected $allowCallbacks = true;
     protected $beforeInsert = ['generateUuid', 'setAgencyId'];
     protected $beforeUpdate = [];
-    protected $afterInsert = [];
-    protected $afterUpdate = [];
+    protected $afterInsert = ['logClientCreated'];
+    protected $afterUpdate = ['logClientUpdated'];
     protected $beforeFind = [];
     protected $afterFind = [];
     protected $beforeDelete = [];
-    protected $afterDelete = [];
+    protected $afterDelete = ['logClientDeleted'];
 
     /**
      * Generate UUID for new client records
@@ -290,5 +290,132 @@ class ClientModel extends Model
             'can_delete' => empty($blockers),
             'blockers' => $blockers,
         ];
+    }
+
+    /**
+     * Log client creation to timeline
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function logClientCreated(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id'])) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $clientName = $data['data']['name'] ?? 'Unknown Client';
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'client',
+            entityId: $data['id'],
+            eventType: 'created',
+            description: "Created client: {$clientName}"
+        );
+
+        return $data;
+    }
+
+    /**
+     * Log client updates to timeline
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function logClientUpdated(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id']) || empty($data['id'])) {
+            return $data;
+        }
+
+        $clientId = is_array($data['id']) ? $data['id'][0] : $data['id'];
+        $client = $this->find($clientId);
+        if (!$client) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $clientName = $client['name'];
+
+        // Detect what changed
+        $changes = [];
+        if (isset($data['data'])) {
+            foreach ($data['data'] as $field => $value) {
+                if (isset($client[$field]) && $client[$field] != $value) {
+                    $changes[] = $field;
+                }
+            }
+        }
+
+        // Determine event type and description
+        if (isset($data['data']['deleted_at']) && $data['data']['deleted_at'] === null) {
+            // Restore operation
+            $description = "Restored client: {$clientName}";
+            $eventType = 'restored';
+        } elseif (isset($data['data']['is_active'])) {
+            // Toggle active operation
+            $status = $data['data']['is_active'] ? 'activated' : 'deactivated';
+            $description = "Client {$status}: {$clientName}";
+            $eventType = 'status_changed';
+        } elseif (!empty($changes)) {
+            // Regular update
+            $changedFields = implode(', ', $changes);
+            $description = "Updated client: {$clientName} (changed: {$changedFields})";
+            $eventType = 'updated';
+        } else {
+            // No significant changes, skip logging
+            return $data;
+        }
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'client',
+            entityId: $clientId,
+            eventType: $eventType,
+            description: $description,
+            metadata: !empty($changes) ? ['changed_fields' => $changes] : null
+        );
+
+        return $data;
+    }
+
+    /**
+     * Log client deletion to timeline
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function logClientDeleted(array $data): array
+    {
+        $user = session()->get('user');
+        if (!$user || !isset($data['id']) || empty($data['id'])) {
+            return $data;
+        }
+
+        $clientId = is_array($data['id']) ? $data['id'][0] : $data['id'];
+
+        // Get client name before deletion (use withDeleted to access soft-deleted record)
+        $client = $this->withDeleted()->find($clientId);
+        if (!$client) {
+            return $data;
+        }
+
+        $timelineModel = new TimelineModel();
+        $clientName = $client['name'];
+
+        $timelineModel->logEvent(
+            userId: $user['id'],
+            entityType: 'client',
+            entityId: $clientId,
+            eventType: 'deleted',
+            description: "Deleted client: {$clientName}",
+            metadata: ['purge' => $data['purge'] ?? false]
+        );
+
+        return $data;
     }
 }
