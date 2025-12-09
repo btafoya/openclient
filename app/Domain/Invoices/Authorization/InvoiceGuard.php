@@ -17,6 +17,14 @@ use Config\Database;
  * - Direct Client: Can view invoices assigned to their client record
  * - End Client: CANNOT access invoices (financial restriction)
  *
+ * Status Workflow Rules:
+ * - draft: Can edit, delete, send
+ * - sent: Cannot edit, can mark as viewed/paid/overdue
+ * - viewed: Cannot edit, can mark as paid/overdue
+ * - paid: Terminal state, no further actions
+ * - overdue: Cannot edit, can mark as paid/cancelled
+ * - cancelled: Terminal state, no further actions
+ *
  * Defense in Depth:
  * - Layer 1 (Database RLS): Enforces agency_id filtering at SQL level
  * - Layer 2 (HTTP Middleware): Blocks End Clients from /invoices routes
@@ -24,6 +32,17 @@ use Config\Database;
  */
 class InvoiceGuard implements AuthorizationGuardInterface
 {
+    /**
+     * Valid status transitions for invoice workflow
+     */
+    private array $statusTransitions = [
+        'draft' => ['sent', 'cancelled'],
+        'sent' => ['viewed', 'paid', 'overdue', 'cancelled'],
+        'viewed' => ['paid', 'overdue', 'cancelled'],
+        'paid' => [], // Terminal state
+        'overdue' => ['paid', 'cancelled'],
+        'cancelled' => [], // Terminal state
+    ];
     /**
      * Check if user can view a specific invoice
      *
@@ -163,6 +182,130 @@ class InvoiceGuard implements AuthorizationGuardInterface
     }
 
     /**
+     * Check if user can send an invoice (draft → sent transition)
+     *
+     * @param array $user User array with 'id', 'role', 'agency_id'
+     * @param mixed $invoice Invoice entity to check
+     * @return bool True if user can send this invoice
+     */
+    public function canSend(array $user, $invoice): bool
+    {
+        $invoice = is_object($invoice) ? (array) $invoice : $invoice;
+
+        // Must have edit permission
+        if (!$this->canEdit($user, $invoice)) {
+            return false;
+        }
+
+        // Only draft invoices can be sent
+        return isset($invoice['status']) && $invoice['status'] === 'draft';
+    }
+
+    /**
+     * Check if user can mark an invoice as paid
+     *
+     * @param array $user User array
+     * @param mixed $invoice Invoice entity
+     * @return bool True if user can mark as paid
+     */
+    public function canMarkAsPaid(array $user, $invoice): bool
+    {
+        $invoice = is_object($invoice) ? (array) $invoice : $invoice;
+
+        // Must have edit permission base
+        if ($user['role'] !== 'owner' && $user['role'] !== 'agency') {
+            return false;
+        }
+
+        // Agency must be same
+        if ($user['role'] === 'agency' && $invoice['agency_id'] !== $user['agency_id']) {
+            return false;
+        }
+
+        // Check valid status transition
+        $currentStatus = $invoice['status'] ?? 'draft';
+        return in_array('paid', $this->statusTransitions[$currentStatus] ?? []);
+    }
+
+    /**
+     * Check if a status transition is valid
+     *
+     * @param string $fromStatus Current status
+     * @param string $toStatus Target status
+     * @return bool True if transition is valid
+     */
+    public function isValidStatusTransition(string $fromStatus, string $toStatus): bool
+    {
+        return in_array($toStatus, $this->statusTransitions[$fromStatus] ?? []);
+    }
+
+    /**
+     * Get allowed status transitions for current status
+     *
+     * @param string $currentStatus Current invoice status
+     * @return array List of allowed next statuses
+     */
+    public function getAllowedTransitions(string $currentStatus): array
+    {
+        return $this->statusTransitions[$currentStatus] ?? [];
+    }
+
+    /**
+     * Check if user can edit line items on an invoice
+     * (Line items can only be edited on draft invoices)
+     *
+     * @param array $user User array
+     * @param mixed $invoice Invoice entity
+     * @return bool True if user can edit line items
+     */
+    public function canEditLineItems(array $user, $invoice): bool
+    {
+        $invoice = is_object($invoice) ? (array) $invoice : $invoice;
+
+        // Must have basic edit permission
+        if (!$this->canEdit($user, $invoice)) {
+            return false;
+        }
+
+        // Only draft invoices allow line item editing
+        return isset($invoice['status']) && $invoice['status'] === 'draft';
+    }
+
+    /**
+     * Check if user can download PDF of an invoice
+     *
+     * @param array $user User array
+     * @param mixed $invoice Invoice entity
+     * @return bool True if user can download PDF
+     */
+    public function canDownloadPdf(array $user, $invoice): bool
+    {
+        // Same as view permission - anyone who can see it can download PDF
+        return $this->canView($user, $invoice);
+    }
+
+    /**
+     * Check if user can resend an invoice email
+     *
+     * @param array $user User array
+     * @param mixed $invoice Invoice entity
+     * @return bool True if user can resend
+     */
+    public function canResend(array $user, $invoice): bool
+    {
+        $invoice = is_object($invoice) ? (array) $invoice : $invoice;
+
+        // Must have edit permission
+        if (!$this->canEdit($user, $invoice)) {
+            return false;
+        }
+
+        // Only sent, viewed, or overdue invoices can be resent
+        $resendableStatuses = ['sent', 'viewed', 'overdue'];
+        return isset($invoice['status']) && in_array($invoice['status'], $resendableStatuses);
+    }
+
+    /**
      * Get user's permission summary for debugging/auditing
      *
      * Returns array of permissions user has for invoice operations.
@@ -174,11 +317,22 @@ class InvoiceGuard implements AuthorizationGuardInterface
      */
     public function getPermissionSummary(array $user, $invoice = null): array
     {
-        return [
+        $summary = [
             'canCreate' => $this->canCreate($user),
             'canView' => $invoice ? $this->canView($user, $invoice) : null,
             'canEdit' => $invoice ? $this->canEdit($user, $invoice) : null,
             'canDelete' => $invoice ? $this->canDelete($user, $invoice) : null,
         ];
+
+        if ($invoice) {
+            $summary['canSend'] = $this->canSend($user, $invoice);
+            $summary['canMarkAsPaid'] = $this->canMarkAsPaid($user, $invoice);
+            $summary['canEditLineItems'] = $this->canEditLineItems($user, $invoice);
+            $summary['canDownloadPdf'] = $this->canDownloadPdf($user, $invoice);
+            $summary['canResend'] = $this->canResend($user, $invoice);
+            $summary['allowedTransitions'] = $this->getAllowedTransitions($invoice['status'] ?? 'draft');
+        }
+
+        return $summary;
     }
 }

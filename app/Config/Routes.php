@@ -173,6 +173,39 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
 
         // User time entry statistics
         $routes->get('users/(:segment)/time-entries/stats', 'Projects\TimeEntryController::getUserStats/$1');
+
+        // Invoices API routes
+        $routes->group('invoices', ['namespace' => 'App\Controllers\Invoices'], static function($routes) {
+            // Statistics and special routes (must come before generic routes)
+            $routes->get('stats', 'InvoiceController::stats');
+            $routes->get('overdue', 'InvoiceController::overdue');
+            $routes->post('from-project/(:segment)', 'InvoiceController::createFromProject/$1');
+
+            // CRUD endpoints
+            $routes->get('/', 'InvoiceController::index');
+            $routes->post('/', 'InvoiceController::store');
+            $routes->get('(:segment)', 'InvoiceController::show/$1');
+            $routes->put('(:segment)', 'InvoiceController::update/$1');
+            $routes->patch('(:segment)', 'InvoiceController::update/$1');
+            $routes->delete('(:segment)', 'InvoiceController::delete/$1');
+
+            // Status and workflow endpoints
+            $routes->patch('(:segment)/status', 'InvoiceController::updateStatus/$1');
+            $routes->post('(:segment)/send', 'InvoiceController::send/$1');
+            $routes->post('(:segment)/resend', 'InvoiceController::resend/$1');
+            $routes->post('(:segment)/mark-paid', 'InvoiceController::markPaid/$1');
+
+            // PDF endpoints
+            $routes->get('(:segment)/pdf', 'InvoiceController::pdf/$1');
+            $routes->get('(:segment)/preview', 'InvoiceController::preview/$1');
+
+            // Line items nested routes
+            $routes->get('(:segment)/line-items', 'InvoiceLineItemController::index/$1');
+            $routes->post('(:segment)/line-items', 'InvoiceLineItemController::store/$1');
+            $routes->put('(:segment)/line-items/(:segment)', 'InvoiceLineItemController::update/$1/$2');
+            $routes->delete('(:segment)/line-items/(:segment)', 'InvoiceLineItemController::delete/$1/$2');
+            $routes->post('(:segment)/line-items/reorder', 'InvoiceLineItemController::reorder/$1');
+        });
     });
 });
 
@@ -183,6 +216,8 @@ $routes->get('crm', 'SpaController::index');
 $routes->get('crm/(:any)', 'SpaController::index');
 $routes->get('projects', 'SpaController::index');
 $routes->get('projects/(:any)', 'SpaController::index');
+$routes->get('invoices', 'SpaController::index');
+$routes->get('invoices/(:any)', 'SpaController::index');
 
 // Catch-all for other SPA routes (add as needed)
 // Example: $routes->get('settings/(:any)', 'SpaController::index');
