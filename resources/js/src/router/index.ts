@@ -140,6 +140,40 @@ const router = createRouter({
         title: 'Signup',
       },
     },
+
+    // CRM Routes
+    {
+      path: '/crm/clients',
+      name: 'Clients',
+      component: () => import('../views/CRM/Clients/ClientList.vue'),
+      meta: {
+        title: 'Clients',
+      },
+    },
+    {
+      path: '/crm/clients/create',
+      name: 'Create Client',
+      component: () => import('../views/CRM/Clients/ClientCreate.vue'),
+      meta: {
+        title: 'Create Client',
+      },
+    },
+    {
+      path: '/crm/clients/:id/edit',
+      name: 'Edit Client',
+      component: () => import('../views/CRM/Clients/ClientEdit.vue'),
+      meta: {
+        title: 'Edit Client',
+      },
+    },
+    {
+      path: '/crm/clients/:id',
+      name: 'View Client',
+      component: () => import('../views/CRM/Clients/ClientView.vue'),
+      meta: {
+        title: 'Client Details',
+      },
+    },
   ],
 })
 

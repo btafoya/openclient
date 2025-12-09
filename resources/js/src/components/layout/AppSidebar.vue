@@ -257,6 +257,13 @@ const menuGroups = [
         name: "User Profile",
         path: "/profile",
       },
+      {
+        icon: UserCircleIcon,
+        name: "CRM",
+        subItems: [
+          { name: "Clients", path: "/crm/clients", pro: false },
+        ],
+      },
 
       {
         name: "Forms",
