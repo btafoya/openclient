@@ -49,6 +49,19 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
         $routes->post('(:segment)/toggle-active', 'ContactController::toggleActive/$1');
     });
 
+    // Note routes
+    $routes->group('notes', ['namespace' => 'App\Controllers\Notes'], static function($routes) {
+        $routes->get('/', 'NoteController::index');
+        $routes->get('create', 'NoteController::create');
+        $routes->post('/', 'NoteController::store');
+        $routes->get('(:segment)', 'NoteController::show/$1');
+        $routes->get('(:segment)/edit', 'NoteController::edit/$1');
+        $routes->put('(:segment)', 'NoteController::update/$1');
+        $routes->delete('(:segment)', 'NoteController::delete/$1');
+        $routes->post('(:segment)/restore', 'NoteController::restore/$1');
+        $routes->post('(:segment)/toggle-pin', 'NoteController::togglePin/$1');
+    });
+
     // API routes
     $routes->group('api', static function($routes) {
         $routes->group('clients', ['namespace' => 'App\Controllers\Clients'], static function($routes) {
@@ -58,6 +71,10 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
         $routes->group('contacts', ['namespace' => 'App\Controllers\Contacts'], static function($routes) {
             $routes->get('/', 'ContactController::apiIndex');
             $routes->get('(:segment)', 'ContactController::apiShow/$1');
+        });
+        $routes->group('notes', ['namespace' => 'App\Controllers\Notes'], static function($routes) {
+            $routes->get('/', 'NoteController::apiIndex');
+            $routes->get('(:segment)', 'NoteController::apiShow/$1');
         });
     });
 });
