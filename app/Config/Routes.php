@@ -62,6 +62,15 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
         $routes->post('(:segment)/toggle-pin', 'NoteController::togglePin/$1');
     });
 
+    // Timeline routes
+    $routes->group('timeline', ['namespace' => 'App\Controllers\Timeline'], static function($routes) {
+        $routes->get('/', 'TimelineController::index');
+        $routes->get('create', 'TimelineController::create');
+        $routes->post('/', 'TimelineController::store');
+        $routes->get('(:segment)', 'TimelineController::show/$1');
+        $routes->delete('(:segment)', 'TimelineController::delete/$1');
+    });
+
     // API routes
     $routes->group('api', static function($routes) {
         $routes->group('clients', ['namespace' => 'App\Controllers\Clients'], static function($routes) {
@@ -75,6 +84,11 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
         $routes->group('notes', ['namespace' => 'App\Controllers\Notes'], static function($routes) {
             $routes->get('/', 'NoteController::apiIndex');
             $routes->get('(:segment)', 'NoteController::apiShow/$1');
+        });
+        $routes->group('timeline', ['namespace' => 'App\Controllers\Timeline'], static function($routes) {
+            $routes->get('/', 'TimelineController::apiIndex');
+            $routes->get('(:segment)', 'TimelineController::apiShow/$1');
+            $routes->get('statistics', 'TimelineController::apiStatistics');
         });
     });
 });
