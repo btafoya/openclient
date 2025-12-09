@@ -174,6 +174,40 @@ const router = createRouter({
         title: 'Client Details',
       },
     },
+    {
+      path: '/crm/contacts',
+      name: 'Contacts',
+      component: () => import('../views/CRM/Contacts/ContactList.vue'),
+      meta: {
+        title: 'Contacts',
+      },
+    },
+    {
+      path: '/crm/timeline',
+      name: 'Timeline',
+      component: () => import('../views/CRM/Timeline/TimelineView.vue'),
+      meta: {
+        title: 'Timeline',
+      },
+    },
+
+    // Projects Routes
+    {
+      path: '/projects',
+      name: 'Projects',
+      component: () => import('../views/Projects/ProjectList.vue'),
+      meta: {
+        title: 'Projects',
+      },
+    },
+    {
+      path: '/projects/:id',
+      name: 'View Project',
+      component: () => import('../views/Projects/ProjectView.vue'),
+      meta: {
+        title: 'Project Details',
+      },
+    },
   ],
 })
 

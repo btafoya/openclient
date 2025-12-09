@@ -8,27 +8,24 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@': resolve(__dirname, './resources/js'),
+      '@': resolve(__dirname, './resources/js/src'),
     },
   },
 
+  root: './',
+  publicDir: resolve(__dirname, './resources/js/public'),
+
   build: {
     // Output directory (relative to project root)
-    outDir: 'public/assets',
+    outDir: 'public/dist',
 
     // Empty output directory before build
     emptyOutDir: true,
 
-    // Generate manifest for asset mapping
-    manifest: true,
-
     rollupOptions: {
       input: {
         // Main application entry point
-        app: resolve(__dirname, 'resources/js/app.js'),
-
-        // Separate CSS entry
-        styles: resolve(__dirname, 'resources/css/app.css'),
+        main: resolve(__dirname, 'index.html'),
       },
 
       output: {

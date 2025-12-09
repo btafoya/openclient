@@ -1,0 +1,1 @@
+import{_ as o,c as s,e as t,f as c,o as n}from"./main-SWmWNSpG.js";const a={},r={class:"min-h-screen"};function l(e,_){return n(),s("div",r,[t("main",null,[c(e.$slots,"default")])])}const i=o(a,[["render",l],["__file","/home/btafoya/projects/openclient/resources/js/src/components/layout/FullScreenLayout.vue"]]),m="/images/logo/auth-logo.svg";export{i as F,m as _};

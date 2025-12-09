@@ -115,5 +115,74 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
         $routes->group('csv', ['namespace' => 'App\Controllers\CsvImport'], static function($routes) {
             $routes->get('import/statistics', 'CsvImportController::apiStatistics');
         });
+
+        // Projects API routes
+        $routes->group('projects', ['namespace' => 'App\Controllers\Projects'], static function($routes) {
+            $routes->get('stats', 'ProjectController::stats');
+            $routes->get('/', 'ProjectController::index');
+            $routes->post('/', 'ProjectController::store');
+            $routes->get('(:segment)', 'ProjectController::show/$1');
+            $routes->put('(:segment)', 'ProjectController::update/$1');
+            $routes->patch('(:segment)', 'ProjectController::update/$1');
+            $routes->patch('(:segment)/status', 'ProjectController::updateStatus/$1');
+            $routes->delete('(:segment)', 'ProjectController::delete/$1');
+            $routes->post('(:segment)/restore', 'ProjectController::restore/$1');
+            $routes->post('(:segment)/toggle-active', 'ProjectController::toggleActive/$1');
+
+            // Kanban board for specific project
+            $routes->get('(:segment)/kanban', 'TaskController::getKanbanBoard/$1');
+
+            // Tasks reorder for project
+            $routes->post('(:segment)/tasks/reorder', 'TaskController::reorderTasks/$1');
+
+            // Time entries summary for project
+            $routes->get('(:segment)/time-entries/summary', 'TimeEntryController::getBillableSummary/$1');
+        });
+
+        // Tasks API routes
+        $routes->group('tasks', ['namespace' => 'App\Controllers\Projects'], static function($routes) {
+            $routes->get('overdue', 'TaskController::getOverdue');
+            $routes->get('/', 'TaskController::index');
+            $routes->post('/', 'TaskController::store');
+            $routes->get('(:segment)', 'TaskController::show/$1');
+            $routes->put('(:segment)', 'TaskController::update/$1');
+            $routes->patch('(:segment)', 'TaskController::update/$1');
+            $routes->patch('(:segment)/status', 'TaskController::updateStatus/$1');
+            $routes->patch('(:segment)/assign', 'TaskController::assignToUser/$1');
+            $routes->patch('(:segment)/sort-order', 'TaskController::updateSortOrder/$1');
+            $routes->delete('(:segment)', 'TaskController::delete/$1');
+            $routes->post('(:segment)/toggle-active', 'TaskController::toggleActive/$1');
+        });
+
+        // Time Entries API routes
+        $routes->group('time-entries', ['namespace' => 'App\Controllers\Projects'], static function($routes) {
+            // Timer endpoints (must come before generic routes)
+            $routes->post('timer/start', 'TimeEntryController::startTimer');
+            $routes->post('timer/stop', 'TimeEntryController::stopTimer');
+            $routes->get('timer/running', 'TimeEntryController::getRunningTimer');
+
+            // CRUD endpoints
+            $routes->get('/', 'TimeEntryController::index');
+            $routes->post('/', 'TimeEntryController::store');
+            $routes->get('(:segment)', 'TimeEntryController::show/$1');
+            $routes->put('(:segment)', 'TimeEntryController::update/$1');
+            $routes->patch('(:segment)', 'TimeEntryController::update/$1');
+            $routes->patch('(:segment)/toggle-billable', 'TimeEntryController::toggleBillable/$1');
+            $routes->delete('(:segment)', 'TimeEntryController::delete/$1');
+        });
+
+        // User time entry statistics
+        $routes->get('users/(:segment)/time-entries/stats', 'Projects\TimeEntryController::getUserStats/$1');
     });
 });
+
+// Vue SPA Catch-All Routes
+// These must come AFTER all API routes to avoid conflicts
+// Serve Vue SPA for all frontend routes (CRM, Projects, etc.)
+$routes->get('crm', 'SpaController::index');
+$routes->get('crm/(:any)', 'SpaController::index');
+$routes->get('projects', 'SpaController::index');
+$routes->get('projects/(:any)', 'SpaController::index');
+
+// Catch-all for other SPA routes (add as needed)
+// Example: $routes->get('settings/(:any)', 'SpaController::index');

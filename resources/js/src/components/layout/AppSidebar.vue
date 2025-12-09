@@ -262,6 +262,15 @@ const menuGroups = [
         name: "CRM",
         subItems: [
           { name: "Clients", path: "/crm/clients", pro: false },
+          { name: "Contacts", path: "/crm/contacts", pro: false },
+          { name: "Timeline", path: "/crm/timeline", pro: false },
+        ],
+      },
+      {
+        icon: BoxCubeIcon,
+        name: "Projects",
+        subItems: [
+          { name: "Projects", path: "/projects", pro: false },
         ],
       },
 
