@@ -322,6 +322,24 @@ const router = createRouter({
         title: 'Edit Invoice',
       },
     },
+
+    // Payment Routes
+    {
+      path: '/payments/success',
+      name: 'Payment Success',
+      component: () => import('../views/Payments/PaymentSuccess.vue'),
+      meta: {
+        title: 'Payment Successful',
+      },
+    },
+    {
+      path: '/payments/cancel',
+      name: 'Payment Cancelled',
+      component: () => import('../views/Payments/PaymentCancel.vue'),
+      meta: {
+        title: 'Payment Cancelled',
+      },
+    },
   ],
 })
 

@@ -227,6 +227,19 @@
 
           <!-- Sidebar -->
           <div class="space-y-6">
+            <!-- Payment Error Alert -->
+            <div
+              v-if="paymentError"
+              class="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+            >
+              <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="text-sm text-red-700 dark:text-red-300">{{ paymentError }}</p>
+              </div>
+            </div>
+
             <!-- Payment Info -->
             <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] p-6">
               <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment Information</h2>
@@ -246,7 +259,28 @@
                   <p class="text-sm text-gray-500 dark:text-gray-400">Payment Method</p>
                   <p class="text-gray-900 dark:text-white capitalize">{{ invoice.payment_method }}</p>
                 </div>
+
+                <!-- Pay Now Button -->
+                <div v-if="canPay" class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <PaymentButton
+                    :invoice-id="invoice.id"
+                    :amount="Number(invoice.total)"
+                    :currency="invoice.currency || 'USD'"
+                    label="Pay Now"
+                    button-class="w-full justify-center"
+                    @error="handlePaymentError"
+                  />
+                </div>
               </div>
+            </div>
+
+            <!-- Payment History -->
+            <div v-if="invoice.status !== 'draft'" class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] p-6">
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment History</h2>
+              <PaymentHistory
+                :invoice-id="invoice.id"
+                @refunded="handlePaymentRefunded"
+              />
             </div>
 
             <!-- Status History -->
@@ -323,14 +357,18 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useInvoiceStore } from '@/stores/invoices'
+import { usePaymentStore } from '@/stores/payments'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
+import { PaymentButton, PaymentHistory } from '@/components/payments'
 
 const route = useRoute()
 const router = useRouter()
 const invoiceStore = useInvoiceStore()
+const paymentStore = usePaymentStore()
 
 const loading = ref(true)
 const error = ref(null)
+const paymentError = ref(null)
 
 // Computed
 const invoice = computed(() => invoiceStore.currentInvoice)
@@ -340,6 +378,11 @@ const isOverdue = computed(() => {
   if (invoice.value.status === 'paid' || invoice.value.status === 'cancelled') return false
   if (!invoice.value.due_date) return false
   return new Date(invoice.value.due_date) < new Date()
+})
+
+const canPay = computed(() => {
+  if (!invoice.value) return false
+  return ['sent', 'viewed', 'overdue'].includes(invoice.value.status) && paymentStore.isStripeConfigured
 })
 
 // Methods
@@ -451,8 +494,24 @@ function getStatusClasses(status) {
   return statusClasses[status] || statusClasses.draft
 }
 
-// Lifecycle
-onMounted(() => {
+function handlePaymentError(errorMessage) {
+  paymentError.value = errorMessage
+  setTimeout(() => {
+    paymentError.value = null
+  }, 5000)
+}
+
+function handlePaymentRefunded() {
+  // Reload invoice to get updated status
   loadInvoice()
+}
+
+// Lifecycle
+onMounted(async () => {
+  // Load Stripe config and invoice in parallel
+  await Promise.all([
+    paymentStore.fetchStripeConfig(),
+    loadInvoice()
+  ])
 })
 </script>

@@ -214,8 +214,34 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
             $routes->put('(:segment)/line-items/(:segment)', 'InvoiceLineItemController::update/$1/$2');
             $routes->delete('(:segment)/line-items/(:segment)', 'InvoiceLineItemController::delete/$1/$2');
             $routes->post('(:segment)/line-items/reorder', 'InvoiceLineItemController::reorder/$1');
+
+            // Invoice payments
+            $routes->get('(:segment)/payments', 'Payments\PaymentController::getByInvoice/$1');
+        });
+
+        // Payments API routes
+        $routes->group('payments', ['namespace' => 'App\Controllers\Payments'], static function($routes) {
+            // Configuration
+            $routes->get('config', 'PaymentController::config');
+            $routes->get('stats', 'PaymentController::stats');
+
+            // Checkout flow
+            $routes->post('checkout', 'PaymentController::createCheckout');
+            $routes->get('success', 'PaymentController::success');
+            $routes->get('cancel', 'PaymentController::cancel');
+
+            // Payment CRUD
+            $routes->get('/', 'PaymentController::index');
+            $routes->get('(:segment)', 'PaymentController::show/$1');
+            $routes->post('(:segment)/refund', 'PaymentController::refund/$1');
         });
     });
+});
+
+// Webhook routes (no authentication required - signature verification used)
+$routes->group('webhooks', ['namespace' => 'App\Controllers\Webhooks'], static function($routes) {
+    $routes->post('stripe', 'WebhookController::stripe');
+    $routes->get('health', 'WebhookController::health');
 });
 
 // Vue SPA Catch-All Routes
@@ -227,6 +253,8 @@ $routes->get('projects', 'SpaController::index');
 $routes->get('projects/(:any)', 'SpaController::index');
 $routes->get('invoices', 'SpaController::index');
 $routes->get('invoices/(:any)', 'SpaController::index');
+$routes->get('payments', 'SpaController::index');
+$routes->get('payments/(:any)', 'SpaController::index');
 
 // Catch-all for other SPA routes (add as needed)
 // Example: $routes->get('settings/(:any)', 'SpaController::index');
