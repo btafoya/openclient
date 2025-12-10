@@ -277,6 +277,11 @@ const menuGroups = [
           { name: "Timesheet", path: "/projects/timesheet", pro: false },
         ],
       },
+      {
+        icon: DocsIcon,
+        name: "Invoices",
+        path: "/invoices",
+      },
 
       {
         name: "Forms",

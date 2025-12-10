@@ -288,6 +288,40 @@ const router = createRouter({
         title: 'Edit Project',
       },
     },
+
+    // Invoices Routes
+    {
+      path: '/invoices',
+      name: 'Invoices',
+      component: () => import('../views/Invoices/InvoiceList.vue'),
+      meta: {
+        title: 'Invoices',
+      },
+    },
+    {
+      path: '/invoices/create',
+      name: 'Create Invoice',
+      component: () => import('../views/Invoices/InvoiceCreate.vue'),
+      meta: {
+        title: 'Create Invoice',
+      },
+    },
+    {
+      path: '/invoices/:id',
+      name: 'View Invoice',
+      component: () => import('../views/Invoices/InvoiceView.vue'),
+      meta: {
+        title: 'Invoice Details',
+      },
+    },
+    {
+      path: '/invoices/:id/edit',
+      name: 'Edit Invoice',
+      component: () => import('../views/Invoices/InvoiceEdit.vue'),
+      meta: {
+        title: 'Edit Invoice',
+      },
+    },
   ],
 })
 
