@@ -7,6 +7,8 @@ export const usePaymentStore = defineStore('payments', () => {
   // State
   const payments = ref([])
   const currentPayment = ref(null)
+  const pendingManual = ref([])
+  const availableMethods = ref([])
   const stats = ref({
     total_payments: 0,
     succeeded: 0,
@@ -24,6 +26,44 @@ export const usePaymentStore = defineStore('payments', () => {
   const loading = ref(false)
   const error = ref(null)
   const processingPayment = ref(false)
+
+  // Payment method configurations
+  const paymentMethodConfig = {
+    stripe_card: {
+      name: 'Credit/Debit Card',
+      icon: 'credit-card',
+      instant: true
+    },
+    stripe_ach: {
+      name: 'Bank Transfer (ACH)',
+      icon: 'bank',
+      instant: false,
+      note: 'Takes 4-5 business days'
+    },
+    paypal: {
+      name: 'PayPal',
+      icon: 'paypal',
+      instant: true
+    },
+    zelle: {
+      name: 'Zelle',
+      icon: 'zelle',
+      instant: false,
+      note: 'Pending verification'
+    },
+    check: {
+      name: 'Check',
+      icon: 'check',
+      instant: false,
+      note: 'Pending verification'
+    },
+    wire: {
+      name: 'Wire Transfer',
+      icon: 'wire',
+      instant: false,
+      note: 'Pending verification'
+    }
+  }
 
   // Getters
   const succeededPayments = computed(() =>
@@ -44,7 +84,30 @@ export const usePaymentStore = defineStore('payments', () => {
 
   const isStripeConfigured = computed(() => stripeConfig.value.configured)
 
+  const pendingManualCount = computed(() => pendingManual.value.length)
+
+  const totalCollected = computed(() =>
+    succeededPayments.value.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0)
+  )
+
   // Actions
+
+  async function fetchAvailableMethods(invoiceId) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await axios.get(`/api/invoices/${invoiceId}/payment-methods`)
+      if (response.data.success) {
+        availableMethods.value = response.data.data || []
+      }
+      return availableMethods.value
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to fetch payment methods'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
   async function fetchPayments(filters = {}) {
     loading.value = true
     error.value = null
@@ -260,10 +323,190 @@ export const usePaymentStore = defineStore('payments', () => {
     }).format(amount)
   }
 
+  // PayPal Payment Methods
+  async function createPayPalOrder(invoiceId) {
+    processingPayment.value = true
+    error.value = null
+    try {
+      const response = await axios.post('/api/payments/paypal/create-order', {
+        invoice_id: invoiceId
+      })
+      if (response.data.success) {
+        return response.data.data
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to create PayPal order'
+      throw err
+    } finally {
+      processingPayment.value = false
+    }
+  }
+
+  async function capturePayPalOrder(orderId) {
+    processingPayment.value = true
+    error.value = null
+    try {
+      const response = await axios.post('/api/payments/paypal/capture', {
+        order_id: orderId
+      })
+      if (response.data.success) {
+        // Refresh payments list
+        await fetchPayments()
+        return response.data.data
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to capture PayPal payment'
+      throw err
+    } finally {
+      processingPayment.value = false
+    }
+  }
+
+  // Stripe ACH Payment Methods
+  async function createACHIntent(invoiceId) {
+    processingPayment.value = true
+    error.value = null
+    try {
+      const response = await axios.post('/api/payments/ach/create-intent', {
+        invoice_id: invoiceId
+      })
+      if (response.data.success) {
+        return response.data.data
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to create ACH payment intent'
+      throw err
+    } finally {
+      processingPayment.value = false
+    }
+  }
+
+  async function verifyACHMicrodeposits(paymentIntentId, amounts) {
+    processingPayment.value = true
+    error.value = null
+    try {
+      const response = await axios.post('/api/payments/ach/verify-microdeposits', {
+        payment_intent_id: paymentIntentId,
+        amounts
+      })
+      if (response.data.success) {
+        return response.data.data
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to verify microdeposits'
+      throw err
+    } finally {
+      processingPayment.value = false
+    }
+  }
+
+  // Manual Payments (Zelle, Check, Wire)
+  async function recordManualPayment(invoiceId, paymentMethod, amount = null, reference = '') {
+    processingPayment.value = true
+    error.value = null
+    try {
+      const response = await axios.post('/api/payments/manual/record', {
+        invoice_id: invoiceId,
+        payment_method: paymentMethod,
+        amount,
+        reference
+      })
+      if (response.data.success) {
+        await fetchPayments()
+        return response.data.data
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to record payment'
+      throw err
+    } finally {
+      processingPayment.value = false
+    }
+  }
+
+  async function fetchPendingManualPayments() {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await axios.get('/api/payments/manual/pending')
+      if (response.data.success) {
+        pendingManual.value = response.data.data || []
+      }
+      return pendingManual.value
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to fetch pending payments'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function verifyManualPayment(paymentId, reference = '', notes = '') {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await axios.post(`/api/payments/manual/${paymentId}/verify`, {
+        reference,
+        notes
+      })
+      if (response.data.success) {
+        await fetchPayments()
+        pendingManual.value = pendingManual.value.filter(p => p.id !== paymentId)
+        return response.data.data
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to verify payment'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function rejectManualPayment(paymentId, reason) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await axios.post(`/api/payments/manual/${paymentId}/reject`, {
+        reason
+      })
+      if (response.data.success) {
+        await fetchPayments()
+        pendingManual.value = pendingManual.value.filter(p => p.id !== paymentId)
+        return response.data.data
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to reject payment'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function getPaymentInstructions(invoiceId, method) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await axios.get(`/api/invoices/${invoiceId}/payment-instructions/${method}`)
+      if (response.data.success) {
+        return response.data.data
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || 'Failed to get payment instructions'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  function getMethodConfig(method) {
+    return paymentMethodConfig[method] || { name: method, icon: 'credit-card' }
+  }
+
   // Clear store state
   function clearState() {
     payments.value = []
     currentPayment.value = null
+    pendingManual.value = []
+    availableMethods.value = []
     error.value = null
   }
 
@@ -271,6 +514,8 @@ export const usePaymentStore = defineStore('payments', () => {
     // State
     payments,
     currentPayment,
+    pendingManual,
+    availableMethods,
     stats,
     stripeConfig,
     loading,
@@ -283,8 +528,13 @@ export const usePaymentStore = defineStore('payments', () => {
     failedPayments,
     refundedPayments,
     isStripeConfigured,
+    pendingManualCount,
+    totalCollected,
 
-    // Actions
+    // Config
+    paymentMethodConfig,
+
+    // Actions - Stripe Card
     fetchPayments,
     fetchPayment,
     fetchPaymentsByInvoice,
@@ -296,6 +546,27 @@ export const usePaymentStore = defineStore('payments', () => {
     handlePaymentCancel,
     refundPayment,
     getStripe,
+
+    // Actions - Payment Methods
+    fetchAvailableMethods,
+    getPaymentInstructions,
+    getMethodConfig,
+
+    // Actions - PayPal
+    createPayPalOrder,
+    capturePayPalOrder,
+
+    // Actions - Stripe ACH
+    createACHIntent,
+    verifyACHMicrodeposits,
+
+    // Actions - Manual Payments
+    recordManualPayment,
+    fetchPendingManualPayments,
+    verifyManualPayment,
+    rejectManualPayment,
+
+    // Utilities
     getStatusDisplay,
     formatCurrency,
     clearState,

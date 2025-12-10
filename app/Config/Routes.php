@@ -225,17 +225,161 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
             $routes->get('config', 'PaymentController::config');
             $routes->get('stats', 'PaymentController::stats');
 
-            // Checkout flow
+            // Stripe Checkout flow
             $routes->post('checkout', 'PaymentController::createCheckout');
             $routes->get('success', 'PaymentController::success');
             $routes->get('cancel', 'PaymentController::cancel');
+
+            // PayPal routes
+            $routes->post('paypal/create-order', 'PaymentController::paypalCreateOrder');
+            $routes->post('paypal/capture', 'PaymentController::paypalCapture');
+
+            // Stripe ACH routes
+            $routes->post('ach/create-intent', 'PaymentController::achCreateIntent');
+            $routes->post('ach/verify-microdeposits', 'PaymentController::achVerifyMicrodeposits');
+
+            // Manual payment routes (Zelle, check, wire)
+            $routes->post('manual/record', 'PaymentController::manualRecord');
+            $routes->get('manual/pending', 'PaymentController::pendingManualPayments');
+            $routes->post('manual/(:segment)/verify', 'PaymentController::manualVerify/$1');
+            $routes->post('manual/(:segment)/reject', 'PaymentController::manualReject/$1');
 
             // Payment CRUD
             $routes->get('/', 'PaymentController::index');
             $routes->get('(:segment)', 'PaymentController::show/$1');
             $routes->post('(:segment)/refund', 'PaymentController::refund/$1');
         });
+
+        // Invoice payment methods and instructions
+        $routes->get('invoices/(:segment)/payment-methods', 'Payments\PaymentController::availableMethods/$1');
+        $routes->get('invoices/(:segment)/payment-instructions/(:segment)', 'Payments\PaymentController::paymentInstructions/$1/$2');
+
+        // Pipelines API routes
+        $routes->group('pipelines', ['namespace' => 'App\Controllers\Pipelines'], static function($routes) {
+            $routes->get('/', 'PipelineController::index');
+            $routes->post('/', 'PipelineController::store');
+            $routes->get('(:segment)', 'PipelineController::show/$1');
+            $routes->put('(:segment)', 'PipelineController::update/$1');
+            $routes->patch('(:segment)', 'PipelineController::update/$1');
+            $routes->delete('(:segment)', 'PipelineController::delete/$1');
+            $routes->get('(:segment)/stats', 'PipelineController::stats/$1');
+
+            // Pipeline stages
+            $routes->post('(:segment)/stages', 'PipelineController::addStage/$1');
+            $routes->put('(:segment)/stages/reorder', 'PipelineController::reorderStages/$1');
+            $routes->put('(:segment)/stages/(:segment)', 'PipelineController::updateStage/$1/$2');
+            $routes->delete('(:segment)/stages/(:segment)', 'PipelineController::deleteStage/$1/$2');
+        });
+
+        // Deals API routes
+        $routes->group('deals', ['namespace' => 'App\Controllers\Pipelines'], static function($routes) {
+            // Special routes (must come before generic routes)
+            $routes->get('stats', 'DealController::stats');
+            $routes->get('closing-soon', 'DealController::closingSoon');
+            $routes->get('overdue', 'DealController::overdue');
+            $routes->put('reorder', 'DealController::reorder');
+            $routes->get('kanban/(:segment)', 'DealController::kanban/$1');
+
+            // CRUD endpoints
+            $routes->get('/', 'DealController::index');
+            $routes->post('/', 'DealController::store');
+            $routes->get('(:segment)', 'DealController::show/$1');
+            $routes->put('(:segment)', 'DealController::update/$1');
+            $routes->patch('(:segment)', 'DealController::update/$1');
+            $routes->delete('(:segment)', 'DealController::delete/$1');
+
+            // Deal workflow
+            $routes->post('(:segment)/move', 'DealController::move/$1');
+            $routes->post('(:segment)/won', 'DealController::markWon/$1');
+            $routes->post('(:segment)/lost', 'DealController::markLost/$1');
+            $routes->post('(:segment)/convert', 'DealController::convert/$1');
+
+            // Deal activities
+            $routes->get('(:segment)/activities', 'DealController::getActivities/$1');
+            $routes->post('(:segment)/activities', 'DealController::addActivity/$1');
+        });
+
+        // Proposals API routes
+        $routes->group('proposals', ['namespace' => 'App\Controllers\Proposals'], static function($routes) {
+            // Templates
+            $routes->get('templates', 'ProposalController::templates');
+
+            // CRUD endpoints
+            $routes->get('/', 'ProposalController::index');
+            $routes->post('/', 'ProposalController::store');
+            $routes->get('(:segment)', 'ProposalController::show/$1');
+            $routes->put('(:segment)', 'ProposalController::update/$1');
+            $routes->patch('(:segment)', 'ProposalController::update/$1');
+            $routes->delete('(:segment)', 'ProposalController::delete/$1');
+
+            // Proposal workflow
+            $routes->post('(:segment)/send', 'ProposalController::send/$1');
+            $routes->post('(:segment)/convert-to-invoice', 'ProposalController::convertToInvoice/$1');
+
+            // Proposal sections
+            $routes->get('(:segment)/sections', 'ProposalSectionController::index/$1');
+            $routes->post('(:segment)/sections', 'ProposalSectionController::store/$1');
+            $routes->put('(:segment)/sections/(:segment)', 'ProposalSectionController::update/$1/$2');
+            $routes->delete('(:segment)/sections/(:segment)', 'ProposalSectionController::delete/$1/$2');
+            $routes->post('(:segment)/sections/reorder', 'ProposalSectionController::reorder/$1');
+        });
+
+        // Proposal Templates API routes
+        $routes->group('proposal-templates', ['namespace' => 'App\Controllers\Proposals'], static function($routes) {
+            $routes->get('/', 'ProposalTemplateController::index');
+            $routes->post('/', 'ProposalTemplateController::store');
+            $routes->get('(:segment)', 'ProposalTemplateController::show/$1');
+            $routes->put('(:segment)', 'ProposalTemplateController::update/$1');
+            $routes->patch('(:segment)', 'ProposalTemplateController::update/$1');
+            $routes->delete('(:segment)', 'ProposalTemplateController::delete/$1');
+            $routes->post('(:segment)/duplicate', 'ProposalTemplateController::duplicate/$1');
+        });
+
+        // Recurring Invoices API routes
+        $routes->group('recurring-invoices', ['namespace' => 'App\Controllers\RecurringInvoices'], static function($routes) {
+            $routes->get('/', 'RecurringInvoiceController::index');
+            $routes->post('/', 'RecurringInvoiceController::store');
+            $routes->get('(:segment)', 'RecurringInvoiceController::show/$1');
+            $routes->put('(:segment)', 'RecurringInvoiceController::update/$1');
+            $routes->patch('(:segment)', 'RecurringInvoiceController::update/$1');
+            $routes->delete('(:segment)', 'RecurringInvoiceController::delete/$1');
+
+            // Recurring invoice workflow
+            $routes->post('(:segment)/pause', 'RecurringInvoiceController::pause/$1');
+            $routes->post('(:segment)/resume', 'RecurringInvoiceController::resume/$1');
+            $routes->post('(:segment)/cancel', 'RecurringInvoiceController::cancel/$1');
+            $routes->post('(:segment)/process', 'RecurringInvoiceController::process/$1');
+        });
+
+        // Portal Access Management API routes (for agency admins)
+        $routes->group('clients/(:segment)/portal-access', ['namespace' => 'App\Controllers\Portal'], static function($routes) {
+            $routes->get('/', 'PortalAccessController::index/$1');
+            $routes->post('/', 'PortalAccessController::store/$1');
+            $routes->put('(:segment)', 'PortalAccessController::update/$1/$2');
+            $routes->delete('(:segment)', 'PortalAccessController::delete/$1/$2');
+            $routes->post('(:segment)/send-link', 'PortalAccessController::sendLink/$1/$2');
+            $routes->delete('/', 'PortalAccessController::revokeAll/$1');
+        });
     });
+});
+
+// Client Portal routes (separate authentication)
+$routes->group('portal', ['namespace' => 'App\Controllers\Portal'], static function($routes) {
+    // Auth endpoints (no auth required)
+    $routes->post('auth/request-link', 'PortalController::requestMagicLink');
+    $routes->post('auth/magic-link', 'PortalController::authMagicLink');
+    $routes->post('auth/logout', 'PortalController::logout');
+
+    // Protected portal endpoints
+    $routes->get('me', 'PortalController::me');
+    $routes->get('invoices', 'PortalController::invoices');
+    $routes->get('invoices/(:segment)', 'PortalController::showInvoice/$1');
+    $routes->get('proposals', 'PortalController::proposals');
+    $routes->get('proposals/(:segment)', 'PortalController::showProposal/$1');
+    $routes->post('proposals/(:segment)/accept', 'PortalController::acceptProposal/$1');
+    $routes->post('proposals/(:segment)/reject', 'PortalController::rejectProposal/$1');
+    $routes->get('projects', 'PortalController::projects');
+    $routes->get('activity', 'PortalController::activity');
 });
 
 // Webhook routes (no authentication required - signature verification used)
@@ -255,6 +399,10 @@ $routes->get('invoices', 'SpaController::index');
 $routes->get('invoices/(:any)', 'SpaController::index');
 $routes->get('payments', 'SpaController::index');
 $routes->get('payments/(:any)', 'SpaController::index');
+$routes->get('pipelines', 'SpaController::index');
+$routes->get('pipelines/(:any)', 'SpaController::index');
+$routes->get('deals', 'SpaController::index');
+$routes->get('deals/(:any)', 'SpaController::index');
 
 // Catch-all for other SPA routes (add as needed)
 // Example: $routes->get('settings/(:any)', 'SpaController::index');

@@ -40,6 +40,11 @@ class PaymentModel extends Model
         'stripe_payment_intent_id',
         'stripe_charge_id',
         'stripe_checkout_session_id',
+        'paypal_order_id',
+        'paypal_capture_id',
+        'manual_reference',
+        'verified_by',
+        'verified_at',
         'amount',
         'currency',
         'status',
@@ -331,6 +336,119 @@ class PaymentModel extends Model
         return $this->where('invoice_id', $invoiceId)
             ->where('status', 'succeeded')
             ->countAllResults() > 0;
+    }
+
+    /**
+     * Get payment by PayPal Order ID
+     */
+    public function getByPayPalOrderId(string $orderId): ?array
+    {
+        return $this->where('paypal_order_id', $orderId)->first();
+    }
+
+    /**
+     * Create a pending PayPal payment
+     */
+    public function createPendingPayPalPayment(string $invoiceId, float $amount, string $currency, string $orderId): ?string
+    {
+        $paymentId = $this->insert([
+            'invoice_id' => $invoiceId,
+            'amount' => $amount,
+            'currency' => strtoupper($currency),
+            'status' => 'pending',
+            'payment_method' => 'paypal',
+            'paypal_order_id' => $orderId,
+        ], true);
+
+        return $paymentId ?: null;
+    }
+
+    /**
+     * Record PayPal payment success
+     */
+    public function recordPayPalSuccess(string $id, array $paypalData): bool
+    {
+        return $this->update($id, [
+            'status' => 'succeeded',
+            'paypal_capture_id' => $paypalData['capture_id'] ?? null,
+            'payment_method_details' => json_encode($paypalData['details'] ?? []),
+            'processed_at' => date('Y-m-d H:i:s'),
+            'metadata' => json_encode($paypalData['metadata'] ?? []),
+        ]);
+    }
+
+    /**
+     * Create a pending manual payment (Zelle, check, wire, etc.)
+     */
+    public function createPendingManualPayment(string $invoiceId, float $amount, string $currency, string $paymentMethod, ?string $reference = null): ?string
+    {
+        $paymentId = $this->insert([
+            'invoice_id' => $invoiceId,
+            'amount' => $amount,
+            'currency' => strtoupper($currency),
+            'status' => 'pending',
+            'payment_method' => $paymentMethod,
+            'manual_reference' => $reference,
+        ], true);
+
+        return $paymentId ?: null;
+    }
+
+    /**
+     * Verify a manual payment (mark as succeeded after manual verification)
+     */
+    public function verifyManualPayment(string $id, string $verifiedBy, ?string $reference = null): bool
+    {
+        $updateData = [
+            'status' => 'succeeded',
+            'verified_by' => $verifiedBy,
+            'verified_at' => date('Y-m-d H:i:s'),
+            'processed_at' => date('Y-m-d H:i:s'),
+        ];
+
+        if ($reference) {
+            $updateData['manual_reference'] = $reference;
+        }
+
+        return $this->update($id, $updateData);
+    }
+
+    /**
+     * Create a pending Stripe ACH payment
+     */
+    public function createPendingACHPayment(string $invoiceId, float $amount, string $currency, string $paymentIntentId): ?string
+    {
+        $paymentId = $this->insert([
+            'invoice_id' => $invoiceId,
+            'amount' => $amount,
+            'currency' => strtoupper($currency),
+            'status' => 'pending',
+            'payment_method' => 'stripe_ach',
+            'stripe_payment_intent_id' => $paymentIntentId,
+        ], true);
+
+        return $paymentId ?: null;
+    }
+
+    /**
+     * Get payments by payment method
+     */
+    public function getByPaymentMethod(string $paymentMethod): array
+    {
+        return $this->where('payment_method', $paymentMethod)
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+    }
+
+    /**
+     * Get pending manual payments awaiting verification
+     */
+    public function getPendingManualPayments(): array
+    {
+        return $this->whereIn('payment_method', ['zelle', 'check', 'wire', 'other'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'ASC')
+            ->findAll();
     }
 
     /**

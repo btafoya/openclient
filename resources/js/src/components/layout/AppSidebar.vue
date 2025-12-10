@@ -278,6 +278,14 @@ const menuGroups = [
         ],
       },
       {
+        icon: PieChartIcon,
+        name: "Sales",
+        subItems: [
+          { name: "Pipelines", path: "/pipelines", pro: false },
+          { name: "Deals", path: "/deals", pro: false },
+        ],
+      },
+      {
         icon: DocsIcon,
         name: "Invoices",
         path: "/invoices",

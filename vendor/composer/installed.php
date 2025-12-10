@@ -3,7 +3,7 @@
         'name' => 'btafoya/openclient',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '9a6785882b8d906ebc6533da972b418f397a7fda',
+        'reference' => '738d1a7a0dd68e1023f501e5730d2ace51b2a16f',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'btafoya/openclient' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '9a6785882b8d906ebc6533da972b418f397a7fda',
+            'reference' => '738d1a7a0dd68e1023f501e5730d2ace51b2a16f',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -378,6 +378,15 @@
             'install_path' => __DIR__ . '/../sebastian/version',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'stripe/stripe-php' => array(
+            'pretty_version' => 'v19.0.0',
+            'version' => '19.0.0.0',
+            'reference' => '8f868a7825d2680e917f89839e4b67851dad96e2',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../stripe/stripe-php',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'symfony/deprecation-contracts' => array(
             'pretty_version' => 'v3.6.0',
