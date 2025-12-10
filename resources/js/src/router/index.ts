@@ -340,6 +340,156 @@ const router = createRouter({
         title: 'Payment Cancelled',
       },
     },
+
+    // Proposals Routes
+    {
+      path: '/proposals',
+      name: 'Proposals',
+      component: () => import('../views/Proposals/ProposalList.vue'),
+      meta: {
+        title: 'Proposals',
+      },
+    },
+    {
+      path: '/proposals/create',
+      name: 'Create Proposal',
+      component: () => import('../views/Proposals/ProposalCreate.vue'),
+      meta: {
+        title: 'Create Proposal',
+      },
+    },
+    {
+      path: '/proposals/:id',
+      name: 'View Proposal',
+      component: () => import('../views/Proposals/ProposalView.vue'),
+      meta: {
+        title: 'Proposal Details',
+      },
+    },
+    {
+      path: '/proposals/:id/edit',
+      name: 'Edit Proposal',
+      component: () => import('../views/Proposals/ProposalEdit.vue'),
+      meta: {
+        title: 'Edit Proposal',
+      },
+    },
+
+    // Recurring Invoices Routes
+    {
+      path: '/recurring-invoices',
+      name: 'Recurring Invoices',
+      component: () => import('../views/RecurringInvoices/RecurringList.vue'),
+      meta: {
+        title: 'Recurring Invoices',
+      },
+    },
+    {
+      path: '/recurring-invoices/create',
+      name: 'Create Recurring Invoice',
+      component: () => import('../views/RecurringInvoices/RecurringCreate.vue'),
+      meta: {
+        title: 'Create Schedule',
+      },
+    },
+    {
+      path: '/recurring-invoices/:id',
+      name: 'View Recurring Invoice',
+      component: () => import('../views/RecurringInvoices/RecurringView.vue'),
+      meta: {
+        title: 'Schedule Details',
+      },
+    },
+    {
+      path: '/recurring-invoices/:id/edit',
+      name: 'Edit Recurring Invoice',
+      component: () => import('../views/RecurringInvoices/RecurringEdit.vue'),
+      meta: {
+        title: 'Edit Schedule',
+      },
+    },
+
+    // Client Portal Routes (Public/External)
+    {
+      path: '/portal',
+      name: 'Portal Login',
+      component: () => import('../views/Portal/PortalLogin.vue'),
+      meta: {
+        title: 'Client Portal',
+        layout: 'blank',
+      },
+    },
+    {
+      path: '/portal/dashboard',
+      name: 'Portal Dashboard',
+      component: () => import('../views/Portal/PortalDashboard.vue'),
+      meta: {
+        title: 'Client Portal',
+        layout: 'portal',
+      },
+    },
+    {
+      path: '/portal/invoices/:id',
+      name: 'Portal Invoice',
+      component: () => import('../views/Portal/PortalInvoiceView.vue'),
+      meta: {
+        title: 'Invoice',
+        layout: 'portal',
+      },
+    },
+    {
+      path: '/portal/proposals/:id',
+      name: 'Portal Proposal',
+      component: () => import('../views/Portal/PortalProposalView.vue'),
+      meta: {
+        title: 'Proposal',
+        layout: 'portal',
+      },
+    },
+
+    // Pipelines Routes
+    {
+      path: '/pipelines',
+      name: 'Pipelines',
+      component: () => import('../views/Pipelines/PipelineList.vue'),
+      meta: {
+        title: 'Pipelines',
+      },
+    },
+    {
+      path: '/pipelines/create',
+      name: 'Create Pipeline',
+      component: () => import('../views/Pipelines/PipelineCreate.vue'),
+      meta: {
+        title: 'Create Pipeline',
+      },
+    },
+    {
+      path: '/pipelines/:id/edit',
+      name: 'Edit Pipeline',
+      component: () => import('../views/Pipelines/PipelineEdit.vue'),
+      meta: {
+        title: 'Edit Pipeline',
+      },
+    },
+
+    // Deals Routes
+    {
+      path: '/deals',
+      name: 'Deals',
+      component: () => import('../views/Pipelines/DealsKanban.vue'),
+      meta: {
+        title: 'Deals',
+      },
+    },
+    {
+      path: '/deals/:id',
+      name: 'View Deal',
+      component: () => import('../views/Pipelines/DealDetail.vue'),
+      meta: {
+        title: 'Deal Details',
+      },
+    },
   ],
 })
 
