@@ -490,6 +490,42 @@ const router = createRouter({
         title: 'Deal Details',
       },
     },
+
+    // Files Routes
+    {
+      path: '/files',
+      name: 'Files',
+      component: () => import('../views/Files/FileList.vue'),
+      meta: {
+        title: 'Files & Documents',
+      },
+    },
+
+    // Tickets Routes
+    {
+      path: '/tickets',
+      name: 'Tickets',
+      component: () => import('../views/Tickets/TicketList.vue'),
+      meta: {
+        title: 'Support Tickets',
+      },
+    },
+    {
+      path: '/tickets/create',
+      name: 'Create Ticket',
+      component: () => import('../views/Tickets/TicketCreate.vue'),
+      meta: {
+        title: 'Create Ticket',
+      },
+    },
+    {
+      path: '/tickets/:id',
+      name: 'View Ticket',
+      component: () => import('../views/Tickets/TicketView.vue'),
+      meta: {
+        title: 'Ticket Details',
+      },
+    },
   ],
 })
 

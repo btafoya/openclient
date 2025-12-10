@@ -360,6 +360,48 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
             $routes->post('(:segment)/send-link', 'PortalAccessController::sendLink/$1/$2');
             $routes->delete('/', 'PortalAccessController::revokeAll/$1');
         });
+
+        // Files API routes
+        $routes->group('files', ['namespace' => 'App\Controllers\Files'], static function($routes) {
+            $routes->get('stats', 'FileController::stats');
+            $routes->get('recent', 'FileController::recent');
+            $routes->get('search', 'FileController::search');
+            $routes->get('/', 'FileController::index');
+            $routes->post('/', 'FileController::upload');
+            $routes->get('(:segment)', 'FileController::show/$1');
+            $routes->get('(:segment)/download', 'FileController::download/$1');
+            $routes->put('(:segment)', 'FileController::update/$1');
+            $routes->patch('(:segment)', 'FileController::update/$1');
+            $routes->delete('(:segment)', 'FileController::delete/$1');
+        });
+
+        // Tickets API routes
+        $routes->group('tickets', ['namespace' => 'App\Controllers\Tickets'], static function($routes) {
+            $routes->get('stats', 'TicketController::stats');
+            $routes->get('overdue', 'TicketController::overdue');
+            $routes->get('/', 'TicketController::index');
+            $routes->post('/', 'TicketController::store');
+            $routes->get('(:segment)', 'TicketController::show/$1');
+            $routes->put('(:segment)', 'TicketController::update/$1');
+            $routes->patch('(:segment)', 'TicketController::update/$1');
+            $routes->delete('(:segment)', 'TicketController::delete/$1');
+            $routes->post('(:segment)/assign', 'TicketController::assign/$1');
+            $routes->post('(:segment)/resolve', 'TicketController::resolve/$1');
+            $routes->post('(:segment)/close', 'TicketController::close/$1');
+            $routes->post('(:segment)/reopen', 'TicketController::reopen/$1');
+            $routes->get('(:segment)/messages', 'TicketController::getMessages/$1');
+            $routes->post('(:segment)/messages', 'TicketController::addMessage/$1');
+        });
+
+        // Activity Log API routes
+        $routes->group('activity', ['namespace' => 'App\Controllers\Activity'], static function($routes) {
+            $routes->get('stats', 'ActivityController::stats');
+            $routes->get('search', 'ActivityController::search');
+            $routes->get('entity', 'ActivityController::forEntity');
+            $routes->get('/', 'ActivityController::index');
+            $routes->get('user/(:segment)', 'ActivityController::forUser/$1');
+            $routes->get('action/(:segment)', 'ActivityController::byAction/$1');
+        });
     });
 });
 
