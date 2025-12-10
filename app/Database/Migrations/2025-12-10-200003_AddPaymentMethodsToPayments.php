@@ -12,53 +12,61 @@ class AddPaymentMethodsToPayments extends Migration
 {
     public function up(): void
     {
-        // Add payment method column to payments table
-        $this->forge->addColumn('payments', [
-            'payment_method' => [
-                'type' => 'VARCHAR',
-                'constraint' => 30,
-                'default' => 'stripe',
-                'after' => 'status',
-            ],
-            'payment_method_details' => [
-                'type' => 'JSONB',
-                'null' => true,
-                'after' => 'payment_method',
-            ],
-            'paypal_order_id' => [
+        // Check if columns already exist and add only missing ones
+        $columnsToAdd = [];
+
+        // Helper to check if column exists
+        $columnExists = function($column) {
+            $result = $this->db->query("SELECT column_name FROM information_schema.columns WHERE table_name = 'payments' AND column_name = ?", [$column]);
+            return $result->getNumRows() > 0;
+        };
+
+        if (!$columnExists('paypal_order_id')) {
+            $columnsToAdd['paypal_order_id'] = [
                 'type' => 'VARCHAR',
                 'constraint' => 50,
                 'null' => true,
-                'after' => 'stripe_payment_intent_id',
-            ],
-            'paypal_capture_id' => [
+            ];
+        }
+
+        if (!$columnExists('paypal_capture_id')) {
+            $columnsToAdd['paypal_capture_id'] = [
                 'type' => 'VARCHAR',
                 'constraint' => 50,
                 'null' => true,
-                'after' => 'paypal_order_id',
-            ],
-            'manual_reference' => [
+            ];
+        }
+
+        if (!$columnExists('manual_reference')) {
+            $columnsToAdd['manual_reference'] = [
                 'type' => 'VARCHAR',
                 'constraint' => 100,
                 'null' => true,
-                'after' => 'paypal_capture_id',
-            ],
-            'verified_by' => [
+            ];
+        }
+
+        if (!$columnExists('verified_by')) {
+            $columnsToAdd['verified_by'] = [
                 'type' => 'VARCHAR',
                 'constraint' => 36,
                 'null' => true,
-                'after' => 'manual_reference',
-            ],
-            'verified_at' => [
+            ];
+        }
+
+        if (!$columnExists('verified_at')) {
+            $columnsToAdd['verified_at'] = [
                 'type' => 'TIMESTAMP',
                 'null' => true,
-                'after' => 'verified_by',
-            ],
-        ]);
+            ];
+        }
 
-        // Add index for payment method
-        $this->db->query("CREATE INDEX payments_payment_method_idx ON payments (payment_method)");
-        $this->db->query("CREATE INDEX payments_paypal_order_id_idx ON payments (paypal_order_id)");
+        if (!empty($columnsToAdd)) {
+            $this->forge->addColumn('payments', $columnsToAdd);
+        }
+
+        // Add indexes if they don't exist
+        $this->db->query("CREATE INDEX IF NOT EXISTS payments_payment_method_idx ON payments (payment_method)");
+        $this->db->query("CREATE INDEX IF NOT EXISTS payments_paypal_order_id_idx ON payments (paypal_order_id)");
     }
 
     public function down(): void

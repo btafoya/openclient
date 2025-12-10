@@ -288,7 +288,15 @@ const menuGroups = [
       {
         icon: DocsIcon,
         name: "Invoices",
-        path: "/invoices",
+        subItems: [
+          { name: "All Invoices", path: "/invoices", pro: false },
+          { name: "Recurring", path: "/recurring-invoices", pro: false },
+        ],
+      },
+      {
+        icon: PageIcon,
+        name: "Proposals",
+        path: "/proposals",
       },
 
       {

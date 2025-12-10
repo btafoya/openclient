@@ -233,6 +233,14 @@ class RecurringInvoiceModel extends Model
     }
 
     /**
+     * Alias for getDueForProcessing for service compatibility
+     */
+    public function getDueForGeneration(): array
+    {
+        return $this->getDueForProcessing();
+    }
+
+    /**
      * Process a recurring invoice and generate a new invoice
      */
     public function processRecurringInvoice(string $id): ?string
