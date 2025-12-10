@@ -158,4 +158,70 @@ class CsvExportController extends BaseController
 
         return redirect()->back()->with('success', "Deleted {$deleted} old export file(s).");
     }
+
+    /**
+     * API: Export data to CSV
+     */
+    public function apiExport(): ResponseInterface
+    {
+        $user = session()->get('user');
+
+        if (!$this->guard->canExport($user)) {
+            return $this->response->setJSON([
+                'error' => 'Permission denied',
+            ])->setStatusCode(403);
+        }
+
+        $requestData = $this->request->getJSON(true) ?? [];
+        $entityType = $requestData['entity_type'] ?? '';
+
+        if (!in_array($entityType, ['clients', 'contacts', 'notes'])) {
+            return $this->response->setJSON([
+                'error' => 'Invalid entity type selected.',
+            ])->setStatusCode(400);
+        }
+
+        if (!$this->guard->canExportEntityType($user, $entityType)) {
+            return $this->response->setJSON([
+                'error' => 'You do not have permission to export this entity type.',
+            ])->setStatusCode(403);
+        }
+
+        $fields = $requestData['fields'] ?? [];
+        if (empty($fields)) {
+            $allFields = $this->csvExportModel->getExportFields($entityType);
+            $fields = array_keys($allFields);
+        }
+
+        $options = [
+            'fields' => $fields,
+            'filters' => [],
+        ];
+
+        if (!empty($requestData['active_only'])) {
+            $options['filters']['is_active'] = true;
+        }
+
+        if (!empty($requestData['created_after'])) {
+            $options['filters']['created_after'] = $requestData['created_after'];
+        }
+
+        if (!empty($requestData['created_before'])) {
+            $options['filters']['created_before'] = $requestData['created_before'];
+        }
+
+        if (!empty($requestData['search'])) {
+            $options['filters']['search'] = $requestData['search'];
+        }
+
+        $filepath = $this->csvExportModel->export($entityType, $options);
+
+        if (!$filepath || !file_exists($filepath)) {
+            return $this->response->setJSON([
+                'error' => 'Failed to generate export file.',
+            ])->setStatusCode(500);
+        }
+
+        return $this->response->download($filepath, null)->setFileName(basename($filepath));
+    }
 }

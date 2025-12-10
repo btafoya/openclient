@@ -183,11 +183,67 @@ const router = createRouter({
       },
     },
     {
+      path: '/crm/contacts/create',
+      name: 'Create Contact',
+      component: () => import('../views/CRM/Contacts/ContactCreate.vue'),
+      meta: {
+        title: 'Create Contact',
+      },
+    },
+    {
+      path: '/crm/contacts/:id/edit',
+      name: 'Edit Contact',
+      component: () => import('../views/CRM/Contacts/ContactEdit.vue'),
+      meta: {
+        title: 'Edit Contact',
+      },
+    },
+    {
+      path: '/crm/contacts/:id',
+      name: 'View Contact',
+      component: () => import('../views/CRM/Contacts/ContactView.vue'),
+      meta: {
+        title: 'Contact Details',
+      },
+    },
+    {
+      path: '/crm/notes',
+      name: 'Notes',
+      component: () => import('../views/CRM/Notes/NoteList.vue'),
+      meta: {
+        title: 'Notes',
+      },
+    },
+    {
       path: '/crm/timeline',
       name: 'Timeline',
       component: () => import('../views/CRM/Timeline/TimelineView.vue'),
       meta: {
         title: 'Timeline',
+      },
+    },
+    {
+      path: '/crm/csv/import',
+      name: 'CSV Import',
+      component: () => import('../views/CRM/CSV/CsvImport.vue'),
+      meta: {
+        title: 'Import Data',
+      },
+    },
+    {
+      path: '/crm/csv/export',
+      name: 'CSV Export',
+      component: () => import('../views/CRM/CSV/CsvExport.vue'),
+      meta: {
+        title: 'Export Data',
+      },
+    },
+    {
+      path: '/crm/csv/history',
+      name: 'CSV History',
+      component: () => import('../views/CRM/CSV/CsvHistory.vue'),
+      meta: {
+        title: 'Import History',
       },
     },
 
@@ -201,11 +257,35 @@ const router = createRouter({
       },
     },
     {
+      path: '/projects/create',
+      name: 'Create Project',
+      component: () => import('../views/Projects/ProjectCreate.vue'),
+      meta: {
+        title: 'Create Project',
+      },
+    },
+    {
+      path: '/projects/timesheet',
+      name: 'Timesheet',
+      component: () => import('../views/Projects/TimesheetView.vue'),
+      meta: {
+        title: 'Timesheet',
+      },
+    },
+    {
       path: '/projects/:id',
       name: 'View Project',
       component: () => import('../views/Projects/ProjectView.vue'),
       meta: {
         title: 'Project Details',
+      },
+    },
+    {
+      path: '/projects/:id/edit',
+      name: 'Edit Project',
+      component: () => import('../views/Projects/ProjectEdit.vue'),
+      meta: {
+        title: 'Edit Project',
       },
     },
   ],

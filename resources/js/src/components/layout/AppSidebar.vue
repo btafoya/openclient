@@ -263,7 +263,10 @@ const menuGroups = [
         subItems: [
           { name: "Clients", path: "/crm/clients", pro: false },
           { name: "Contacts", path: "/crm/contacts", pro: false },
+          { name: "Notes", path: "/crm/notes", pro: false },
           { name: "Timeline", path: "/crm/timeline", pro: false },
+          { name: "Import Data", path: "/crm/csv/import", pro: false },
+          { name: "Export Data", path: "/crm/csv/export", pro: false },
         ],
       },
       {
@@ -271,6 +274,7 @@ const menuGroups = [
         name: "Projects",
         subItems: [
           { name: "Projects", path: "/projects", pro: false },
+          { name: "Timesheet", path: "/projects/timesheet", pro: false },
         ],
       },
 

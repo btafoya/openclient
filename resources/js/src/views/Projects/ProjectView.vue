@@ -297,43 +297,12 @@
 
           <!-- Tasks Tab -->
           <div v-else-if="activeTab === 'tasks'">
-            <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  Project Tasks
-                </h2>
-                <router-link
-                  :to="`/projects/${project.id}/tasks/create`"
-                  class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  New Task
-                </router-link>
-              </div>
-              <p class="text-sm text-gray-600 dark:text-gray-400">
-                Task management interface will be implemented with the TaskBoard component.
-              </p>
-              <p class="mt-2 text-sm text-gray-500 dark:text-gray-500">
-                This will include Kanban board, task list, and drag-and-drop functionality.
-              </p>
-            </div>
+            <TaskBoard :project-id="project.id" />
           </div>
 
           <!-- Time Tracking Tab -->
           <div v-else-if="activeTab === 'time'">
-            <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-              <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                Time Tracking
-              </h2>
-              <p class="text-sm text-gray-600 dark:text-gray-400">
-                Time tracking interface will be implemented with the TimeTracker component.
-              </p>
-              <p class="mt-2 text-sm text-gray-500 dark:text-gray-500">
-                This will include timer control, time entry list, and billable hours tracking.
-              </p>
-            </div>
+            <TimeTracker :project-id="project.id" />
           </div>
 
           <!-- Timeline Tab -->
@@ -358,6 +327,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProjectStore } from '@/stores/projects'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
+import TaskBoard from '@/components/projects/TaskBoard.vue'
+import TimeTracker from '@/components/projects/TimeTracker.vue'
 
 const route = useRoute()
 const router = useRouter()

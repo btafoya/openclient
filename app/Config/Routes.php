@@ -114,6 +114,15 @@ $routes->group('', ['filter' => 'auth'], static function($routes) {
         });
         $routes->group('csv', ['namespace' => 'App\Controllers\CsvImport'], static function($routes) {
             $routes->get('import/statistics', 'CsvImportController::apiStatistics');
+            $routes->get('imports', 'CsvImportController::apiHistory');
+            $routes->post('import/upload', 'CsvImportController::apiUpload');
+            $routes->get('import/(:segment)', 'CsvImportController::apiShow/$1');
+            $routes->post('import/(:segment)/mapping', 'CsvImportController::apiSaveMapping/$1');
+            $routes->post('import/(:segment)/cancel', 'CsvImportController::apiCancel/$1');
+            $routes->delete('import/(:segment)', 'CsvImportController::apiDelete/$1');
+            $routes->get('import/template/(:segment)', 'CsvImportController::apiDownloadTemplate/$1');
+            $routes->get('export/fields', 'CsvExportController::getFields');
+            $routes->post('export', 'CsvExportController::apiExport');
         });
 
         // Projects API routes
